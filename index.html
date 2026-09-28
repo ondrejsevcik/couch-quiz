@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060b2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Couch Quiz">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1a6b'/%3E%3Ctext x='32' y='45' font-family='Arial' font-weight='bold' font-size='36' fill='%23ffcc4d' text-anchor='middle'%3E%3F%3C/text%3E%3C/svg%3E">
+<title>Couch Quiz</title>
+<style>
+  :root {
+    --bg: #060b2e;
+    --tile: #0b1a6b;
+    --tile-hi: #14299b;
+    --gold: #ffcc4d;
+    --ink: #ffffff;
+    --dead: #04081c;
+    --bad: #ff6b6b;
+    --pad: clamp(6px, 1.4vw, 14px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: max(var(--pad), env(safe-area-inset-top)) max(var(--pad), env(safe-area-inset-right))
+             max(var(--pad), env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+    gap: var(--pad);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  button, input { font-family: inherit; }
+  button { cursor: pointer; border: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .hidden { display: none !important; }
+
+  /* ---------- header ---------- */
+  header {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  h1 {
+    font-size: clamp(18px, 3vw, 34px);
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-shadow: 3px 3px 0 #000;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  #controls { display: flex; gap: 8px; }
+  .small { background: #223; color: #fff; padding: 8px 14px; min-height: 36px; border-radius: 6px; font-size: 13px; }
+
+  /* ---------- scores ---------- */
+  #scores {
+    display: flex;
+    gap: clamp(6px, 1vw, 12px);
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 1400px;
+  }
+  .player {
+    background: var(--tile);
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 4px 16px;
+    text-align: center;
+    min-width: 110px;
+  }
+  .player .nm { font-size: 13px; letter-spacing: 2px; opacity: .85; text-transform: uppercase; }
+  .player .sc { font-size: 22px; font-weight: bold; color: var(--gold); }
+  .player .sc.neg { color: var(--bad); }
+
+  /* ---------- board ---------- */
+  #board {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: auto repeat(6, minmax(0, 1fr));
+    gap: clamp(3px, .5vw, 6px);
+    width: 100%;
+    max-width: 1400px;
+    flex: 1;
+    min-height: 0;
+  }
+  .cat {
+    background: var(--tile);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: clamp(9px, 1.2vw, 17px);
+    letter-spacing: 1px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    border-bottom: 4px solid #000;
+  }
+  .clue-btn {
+    background: var(--tile);
+    color: var(--gold);
+    font-size: clamp(14px, min(3vw, 5vh), 42px);
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000;
+    min-height: 0;
+    transition: background .12s;
+  }
+  @media (hover: hover) { .clue-btn:hover:not(:disabled) { background: var(--tile-hi); } }
+  .clue-btn:active:not(:disabled) { background: var(--tile-hi); }
+  .clue-btn:disabled { background: var(--dead); color: transparent; cursor: default; }
+
+  /* phones in portrait: tight columns */
+  @media (max-width: 600px) {
+    .cat { letter-spacing: 0; padding: 6px 2px; border-bottom-width: 3px; }
+    .player { min-width: 0; padding: 3px 10px; flex: 1 1 28%; }
+    .player .nm { font-size: 11px; letter-spacing: 1px; }
+    .player .sc { font-size: 18px; }
+  }
+  /* phones in landscape: every pixel of height counts */
+  @media (max-height: 500px) {
+    header { display: contents; }
+    h1 { display: none; }
+    #controls { order: 3; }
+    body { gap: 6px; }
+    .player { padding: 2px 12px; display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+    .player .sc { font-size: 16px; }
+    .cat { padding: 4px 2px; }
+    .small { min-height: 30px; padding: 4px 12px; }
+  }
+
+  /* ---------- full-screen panels (clue + setup) ---------- */
+  .panel {
+    position: fixed;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: max(5vw, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right))
+             max(5vw, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
+  }
+  .panel.show { display: flex; }
+
+  #modal { background: var(--tile); text-align: center; gap: clamp(14px, 3vh, 28px); z-index: 10; }
+  /* safe centring: long clues scroll instead of clipping off the top */
+  #modal > :first-child { margin-top: auto; }
+  #modal > :last-child { margin-bottom: auto; }
+  #mCat { font-size: clamp(13px, 2vw, 24px); color: var(--gold); letter-spacing: 3px; text-transform: uppercase; }
+  #mText {
+    font-size: clamp(20px, min(4.2vw, 6vh), 60px);
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 1.25;
+    max-width: 22ch;
+    text-shadow: 3px 3px 0 #000;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  #mAnswer { font-size: clamp(20px, min(3.4vw, 5vh), 46px); color: var(--gold); font-weight: bold; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    background: var(--gold);
+    color: #000;
+    font-size: clamp(15px, 1.6vw, 22px);
+    font-weight: bold;
+    padding: 12px 24px;
+    min-height: 48px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn.ghost { background: #fff; }
+  .btn.bad { background: var(--bad); color: #fff; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .hint { font-size: 15px; opacity: .75; letter-spacing: 1px; }
+
+  /* ---------- setup ---------- */
+  #setup { background: var(--bg); z-index: 20; gap: 22px; }
+  #setup h1 { font-size: clamp(28px, 6vw, 56px); margin-top: 8px; }
+  #setup section { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 10px; }
+  #setup h2 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+  #playerList { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+  .pl { display: flex; gap: 6px; }
+  .pl input {
+    flex: 1;
+    min-width: 0;
+    font-size: 17px; /* >=16px stops iOS zooming on focus */
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid #000;
+    background: var(--tile);
+    color: #fff;
+  }
+  .pl input:focus { outline: 2px solid var(--gold); }
+  .pl button { background: #223; color: #fff; width: 44px; border-radius: 8px; font-size: 20px; }
+  #catGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .chip {
+    background: var(--tile);
+    color: #fff;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 12px 8px;
+    min-height: 56px;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+  }
+  .chip.on { border-color: var(--gold); background: var(--tile-hi); color: var(--gold); }
+  .chip .tag { display: block; font-size: 10px; font-weight: normal; opacity: .6; letter-spacing: 1px; margin-top: 3px; }
+  .setup-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  #startBar { position: sticky; bottom: 0; padding: 12px 0 4px; background: var(--bg); width: 100%; max-width: 900px; justify-content: center; }
+
+  /* clue screen on short (landscape phone) viewports: keep the buttons in view */
+  @media (max-height: 500px) {
+    #modal { gap: 10px; padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+    #mText { max-width: 44ch; font-size: 17px; text-shadow: 2px 2px 0 #000; }
+    #mAnswer { font-size: 18px; }
+    .btn { min-height: 40px; padding: 8px 18px; }
+    .row { margin-top: 8px !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Couch Quiz</h1>
+  <div id="controls">
+    <button class="small" id="toSetup">New board</button>
+    <button class="small" id="resetScores">Reset scores</button>
+  </div>
+</header>
+<div id="scores"></div>
+<div id="board"></div>
+
+<div id="modal" class="panel">
+  <div id="mCat"></div>
+  <div id="mText"></div>
+  <div id="mMedia"></div>
+  <div id="mAnswer"></div>
+  <div id="mStage"></div>
+</div>
+
+<div id="setup" class="panel">
+  <h1>Couch Quiz</h1>
+  <section>
+    <h2>Players</h2>
+    <div id="playerList"></div>
+    <div class="setup-bar"><button class="small" id="addPlayer">+ Add player</button></div>
+  </section>
+  <section>
+    <h2 id="catHead">Pick 6 categories</h2>
+    <div class="setup-bar">
+      <button class="small" id="randomCats">Random 6</button>
+      <button class="small" id="clearCats">Clear</button>
+    </div>
+    <div id="catGrid"></div>
+  </section>
+  <div id="startBar" class="setup-bar">
+    <button class="btn ghost" id="backToGame">Back to game</button>
+    <button class="btn" id="startGame">Start</button>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   QUESTIONS — edit freely. Each category needs exactly 6 clues,
+   ordered easiest to hardest (they map to 100 through 600).
+   Fact-check new clues, and make sure each has exactly one right answer.
+   ===================================================================== */
+const CATEGORIES = [
+  {
+    name: "General Knowledge",
+    clues: [
+      ["This is the only letter that does not appear in the name of any US state", "Q"],
+      ["Because this substance's crystals expand as they freeze, the solid form floats on the liquid, which is why lakes ice over from the top", "Water"],
+      ["Ten days vanished from October 1582 under this reform, and Britain held out until 1752, by which point it had to skip eleven", "The Gregorian calendar"],
+      ["This 1815 Indonesian eruption caused the following 'year without a summer', crop failures across Europe, and indirectly the writing of 'Frankenstein'", "Mount Tambora"],
+      ["This mathematical constant, roughly 1.618, appears when a line is divided so the whole is to the larger part as the larger is to the smaller", "The golden ratio"],
+      ["This Prussian naturalist has more species, mountains and ocean currents named after him than anyone, and mapped climate zones a century before ecology existed", "Alexander von Humboldt"]
+    ]
+  },
+  {
+    name: "Movies",
+    clues: [
+      ["Its mechanical shark kept failing in saltwater, so the director suggested the threat instead of showing it", "Jaws"],
+      ["This 1927 German expressionist epic was so expensive it nearly bankrupted its studio, and its robot design shaped a century of science fiction", "Metropolis"],
+      ["This director's cameo appearances in his own films became such a distraction that he moved them to the opening minutes", "Alfred Hitchcock"],
+      ["This 1941 film lost Best Picture to 'How Green Was My Valley' and was suppressed by the tycoon it satirised", "Citizen Kane"],
+      ["Its plot turns on objects and people moving backwards through time, and its Christopher Nolan title is a palindrome", "Tenet"],
+      ["This 1902 French short featured a capsule landing in the eye of the moon and is often called the first science fiction film", "A Trip to the Moon"]
+    ]
+  },
+  {
+    name: "Food",
+    clues: [
+      ["The name of this cured pork, essential to a true carbonara, comes from the Italian word for 'cheek'", "Guanciale"],
+      ["This chemical process, named for a French scientist, browns a steak and gives bread its crust by reacting sugars with amino acids", "The Maillard reaction"],
+      ["This spice, the world's most expensive by weight, requires roughly 150,000 flowers for a single kilogram", "Saffron"],
+      ["This Japanese seaweed yielded the 1908 discovery of the fifth basic taste", "Kombu"],
+      ["This fruit contains an enzyme that digests protein, which is why it prevents gelatine from setting and stings the tongue", "Pineapple"],
+      ["This 19th-century French chef invented the brigade kitchen hierarchy and codified the five mother sauces", "Auguste Escoffier"]
+    ]
+  },
+  {
+    name: "Social Media",
+    clues: [
+      ["Launched by ByteDance, this short video app grew from a 2018 merger with the lip-syncing service Musical.ly", "TikTok"],
+      ["This feature was invented by a user, not the company: Chris Messina proposed it in a 2007 post to group conversations", "The hashtag"],
+      ["This service began as a podcasting platform called Odeo before pivoting when iTunes added podcasts and made it obsolete", "Twitter"],
+      ["This site's founders built it as a dating service called Tune In Hook Up before repurposing the video-upload code", "YouTube"],
+      ["This photo app was originally a bloated location check-in service called Burbn, stripped down to one feature", "Instagram"],
+      ["Usenet regulars once braced for a yearly wave of clueless new students each autumn; when AOL opened the floodgates in 1993, they named the permanent version of it this", "Eternal September"]
+    ]
+  },
+  {
+    name: "Internet",
+    clues: [
+      ["This 1969 US military research network, the ancestor of today's global network, first linked four research sites in California and Utah", "ARPANET"],
+      ["Ray Tomlinson chose this symbol for email addresses in 1971 because it was on the keyboard and appeared in no one's name", "The at sign"],
+      ["This protocol suite, adopted by ARPANET on 1 January 1983, is why that date is sometimes called the internet's birthday", "TCP/IP"],
+      ["In 1993 CERN voluntarily placed this technology in the public domain, forgoing royalties on what became the web", "The World Wide Web"],
+      ["This 1988 self-replicating program produced the first felony conviction under the Computer Fraud and Abuse Act", "The Morris Worm"],
+      ["This cryptographic scheme, published in 1976, let two strangers agree on a secret key over a channel anyone could read", "Diffie-Hellman key exchange"]
+    ]
+  },
+  {
+    name: "History",
+    clues: [
+      ["He died in a 1521 battle in the Philippines, so Juan Sebastián Elcano finished the first voyage around the world", "Ferdinand Magellan"],
+      ["Mansa Musa ruled this West African realm; his 1324 hajj reportedly handed out so much gold that its value fell in Cairo", "Mali"],
+      ["Hannibal's 216 BC victory over Rome, still studied as the textbook double envelopment", "Battle of Cannae"],
+      ["Haiti's revolutionary leader, lured to a parley in 1802, shipped to France, and left to die in a fort in the Jura mountains", "Toussaint Louverture"],
+      ["This Ming eunuch admiral led seven treasure-fleet voyages from 1405 to 1433, reaching Malindi in East Africa", "Zheng He"],
+      ["Bolivia lost its coastline to Chile in this 1879-1884 war, fought largely over nitrate deposits in the Atacama", "War of the Pacific"]
+    ]
+  },
+  {
+    name: "Geography",
+    clues: [
+      ["Lesotho is entirely surrounded by this one country", "South Africa"],
+      ["Belgium's Baarle-Hertog is a patchwork of more than 20 enclaves sitting inside this country", "Netherlands"],
+      ["This Russian exclave between Poland and Lithuania was once Königsberg, Kant's hometown", "Kaliningrad"],
+      ["Germany got this narrow panhandle in 1890 to reach the Zambezi and sail east, but Victoria Falls was in the way", "Caprivi Strip"],
+      ["The world has two doubly landlocked countries: Liechtenstein and this Central Asian one", "Uzbekistan"],
+      ["This Venezuelan river splits off the upper Orinoco and flows into the Rio Negro, naturally linking two huge river basins", "Casiquiare"]
+    ]
+  },
+  {
+    name: "Science",
+    clues: [
+      ["Its chemical symbol is W, and it has the highest melting point of any metal", "Tungsten"],
+      ["In 1796 he took cowpox from milkmaid Sarah Nelmes to protect 8-year-old James Phipps against smallpox", "Edward Jenner"],
+      ["This numbered X-ray picture of DNA, made in Rosalind Franklin's lab, was shown to Watson without her knowledge", "Photo 51"],
+      ["This process turns nitrogen from the air into ammonia for fertiliser; one of its inventors also led Germany's WWI gas attacks", "Haber-Bosch process"],
+      ["Clemens Winkler found this element in 1886, confirming the eka-silicon that Mendeleev had predicted", "Germanium"],
+      ["Four elements are named after this one Swedish village, whose feldspar quarry produced the black ore later called gadolinite", "Ytterby"]
+    ]
+  },
+  {
+    name: "Space",
+    clues: [
+      ["This Moscow stray dog became the first animal to orbit Earth, aboard Sputnik 2 in 1957", "Laika"],
+      ["In 2005 the Huygens probe landed on this moon of Saturn, which has a thick nitrogen atmosphere", "Titan"],
+      ["He persuaded NASA to turn Voyager 1 around in 1990 to photograph the 'Pale Blue Dot'", "Carl Sagan"],
+      ["This 1999 NASA probe was lost because one team worked in pound-force seconds and the other in newton-seconds", "Mars Climate Orbiter"],
+      ["He made the first spacewalk in 1965 and had to let air out of his swollen spacesuit to get back into the airlock", "Alexei Leonov"],
+      ["This French mathematician worked out where Neptune should be from how Uranus drifted; Berlin found it within 1 degree in 1846", "Urbain Le Verrier"]
+    ]
+  },
+  {
+    name: "Mythology",
+    clues: [
+      ["This Athenian hero used Ariadne's thread to find his way out of the labyrinth", "Theseus"],
+      ["This jackal-headed Egyptian god weighed a dead person's heart against the feather of Ma'at", "Anubis"],
+      ["The Hindu god who wrote down the Mahabharata as Vyasa recited it, breaking off his own tusk to use as a pen", "Ganesha"],
+      ["Loki gave birth to this eight-legged horse, which became Odin's mount", "Sleipnir"],
+      ["This Shinto sun goddess hid in a cave and plunged the world into darkness until the other gods tricked her out", "Amaterasu"],
+      ["This K'iche' Maya text tells how the Hero Twins beat the lords of Xibalba in a ballgame", "Popol Vuh"]
+    ]
+  },
+  {
+    name: "Literature",
+    clues: [
+      ["This author wrote his final novel, a 1949 dystopia, in a remote farmhouse on the Scottish island of Jura while suffering from tuberculosis", "George Orwell"],
+      ["Steinbeck took this 1937 novella's title from a Robert Burns poem about a ploughman wrecking a small creature's nest", "Of Mice and Men"],
+      ["In 1849 this Russian novelist faced a firing squad in St Petersburg, only for a last-second reprieve from the Tsar to arrive", "Fyodor Dostoevsky"],
+      ["Franz Kafka asked this friend to burn his unpublished manuscripts. He refused and published The Trial instead", "Max Brod"],
+      ["Byron's personal physician at Villa Diodati in 1816, he wrote The Vampyre, which was first published under Byron's name", "John Polidori"],
+      ["In 1922 Hadley Hemingway lost a suitcase holding nearly all of Ernest's early manuscripts from a train at this Paris station", "Gare de Lyon"]
+    ]
+  },
+  {
+    name: "Art",
+    clues: [
+      ["This Pop artist was shot and nearly killed in 1968 by Valerie Solanas, author of the SCUM Manifesto", "Andy Warhol"],
+      ["Frida Kahlo married this Mexican muralist twice, in 1929 and again in 1940", "Diego Rivera"],
+      ["After Banksy's Girl with Balloon shredded itself moments after selling at Sotheby's in 2018, it got this new title", "Love Is in the Bin"],
+      ["Maria Altmann won back Klimt's Nazi-looted Portrait of Adele Bloch-Bauer I after taking this country to the US Supreme Court", "Austria"],
+      ["Rembrandt's Night Watch actually shows a daytime scene. It got its nickname because this darkened over time", "Varnish"],
+      ["The Mauritshuis says Girl with a Pearl Earring isn't a portrait but one of these: a Dutch study of a type or character's head", "Tronie"]
+    ]
+  },
+  {
+    name: "Music",
+    clues: [
+      ["Born Farrokh Bulsara in Zanzibar in 1946, he chose a new surname and fronted a British band", "Freddie Mercury"],
+      ["Belgian Adolphe Sax patented this instrument in 1846. It's made of brass but classed as a woodwind", "Saxophone"],
+      ["This flute-led British rock band took its name from an 18th-century English agriculturist who perfected the seed drill", "Jethro Tull"],
+      ["Handel's Messiah premiered in 1742 in this city rather than in London", "Dublin"],
+      ["Nijinsky choreographed the 1913 Paris premiere of Stravinsky's The Rite of Spring, which caused a near-riot, for this company", "Ballets Russes"],
+      ["The Amen break, a roughly six-second drum solo that powered jungle and drum and bass, came from a 1969 B-side by this soul group", "The Winstons"]
+    ]
+  },
+  {
+    name: "Words",
+    clues: [
+      ["The word for unwanted email is borrowed from a Monty Python sketch set in a cafe that serves this canned meat with everything", "Spam"],
+      ["The word 'robot' reached the world through R.U.R., a 1920 play by this Czech writer", "Karel Capek"],
+      ["In 1880 County Mayo tenants shunned an English land agent so completely that his surname became this English verb", "Boycott"],
+      ["This two-letter word began as a joke in an 1839 Boston newspaper, abbreviating a deliberate misspelling of 'all correct'", "OK"],
+      ["This word for a black outline portrait comes from a French finance minister of 1759 who was mocked for his austerity", "Silhouette"],
+      ["In the Book of Judges, the Gileadites killed members of this tribe who could not pronounce 'shibboleth' correctly", "Ephraimites"]
+    ]
+  },
+  {
+    name: "Architecture",
+    clues: [
+      ["Hit by a Barcelona tram in 1926, this architect is buried in the crypt of the basilica he never finished", "Antoni Gaudi"],
+      ["This Chinese-American architect designed the Louvre's glass pyramid, which opened in 1989", "I. M. Pei"],
+      ["This Danish architect quit the Sydney Opera House project in 1966 and never returned to see it finished", "Jorn Utzon"],
+      ["Before his Paris tower, this engineer designed the internal iron framework that holds up the Statue of Liberty", "Gustave Eiffel"],
+      ["Brunelleschi's 15th-century dome, built without wooden centring, crowns a cathedral with this formal name", "Santa Maria del Fiore"],
+      ["He designed Chicago's 1885 Home Insurance Building, often called the first skyscraper, and trained Louis Sullivan", "William Le Baron Jenney"]
+    ]
+  },
+  {
+    name: "Tech Giants",
+    clues: [
+      ["In 1976, co-founder Ronald Wayne sold his 10% stake in this company for $800", "Apple"],
+      ["In 2000, this video rental chain turned down the chance to buy Netflix for about $50 million", "Blockbuster"],
+      ["In 2008, Microsoft offered $44.6 billion for this web portal, which rejected the bid", "Yahoo"],
+      ["Jeff Bezos dropped this original name for Amazon after a lawyer misheard it as 'cadaver'", "Cadabra"],
+      ["Nvidia's $40 billion bid for this British chip designer collapsed in 2022 under regulatory pressure", "Arm"],
+      ["When Gates and Allen started out in 1975, their company name included this punctuation mark, dropped about a year later", "Hyphen"]
+    ]
+  },
+  {
+    name: "Video Games",
+    clues: [
+      ["Its designer said this 1980 arcade hero was inspired by a pizza with one slice missing", "Pac-Man"],
+      ["In the 1981 arcade Donkey Kong, the carpenter we now call Mario went by this name", "Jumpman"],
+      ["Nintendo was founded in Kyoto in 1889 to make these", "Playing cards (hanafuda)"],
+      ["This Soviet computer scientist created Tetris in 1984 but got no royalties until 1996", "Alexey Pajitnov"],
+      ["Kazuhisa Hashimoto added the Konami Code to make testing easier on this 1986 NES port of a shoot-'em-up", "Gradius"],
+      ["In 2014, diggers found buried E.T. Atari cartridges in a landfill in this New Mexico city", "Alamogordo"]
+    ]
+  },
+  {
+    name: "Television",
+    clues: [
+      ["Jimmy McGill, the small-time lawyer, practises under this name", "Saul Goodman"],
+      ["The Sopranos ends by cutting to black in a diner while a song by this band plays", "Journey"],
+      ["Ricky Gervais co-created the original British version of The Office with this man", "Stephen Merchant"],
+      ["This TV producer created Wheel of Fortune and wrote a famous 30-second quiz-show countdown tune as a lullaby for his son", "Merv Griffin"],
+      ["George R.R. Martin based the Red Wedding partly on the 1440 Black Dinner and this 1692 massacre of the MacDonalds", "Glencoe"],
+      ["The Doctor's TARDIS is stuck as a police box because this component, meant to disguise it wherever it lands, is broken", "Chameleon circuit"]
+    ]
+  },
+  {
+    name: "Sport",
+    clues: [
+      ["Cricket's Ashes series is played between England and this country", "Australia"],
+      ["Roger Bannister ran the first sub-four-minute mile in 1954 on the Iffley Road track in this city", "Oxford"],
+      ["This country won six straight Olympic men's field hockey golds, from 1928 to 1956", "India"],
+      ["The first-ever Formula One World Championship race was held in 1950 at this British circuit", "Silverstone"],
+      ["The Tour de France leader wears yellow because it matched the newsprint of this paper, which founded the race", "L'Auto"],
+      ["During the chaotic 1904 Olympic marathon, winner Thomas Hicks was fed brandy, egg whites, and this poison", "Strychnine"]
+    ]
+  },
+  {
+    name: "Drinks",
+    clues: [
+      ["In 1759 this Irish brewer signed a 9,000-year lease on his St James's Gate brewery site", "Arthur Guinness"],
+      ["Legend says this gin, Campari and sweet vermouth cocktail is named after a Florentine count who wanted his Americano stronger", "Negroni"],
+      ["Earl Grey tea is flavoured with the oil of this citrus fruit", "Bergamot"],
+      ["This Champagne house's 19th-century owner, Barbe-Nicole, invented the riddling table in 1816", "Veuve Clicquot"],
+      ["Most of Europe's vineyards had to be regrafted onto American rootstock after this sap-sucking pest arrived in the 1860s", "Phylloxera"],
+      ["At the 1976 'Judgment of Paris' blind tasting, the top white was a 1973 Chardonnay from this Napa winery", "Chateau Montelena"]
+    ]
+  }
+];
+
+const VALUES = [100, 200, 300, 400, 500, 600];
+const BOARD_SIZE = 6;
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 6;
+const DEFAULT_PLAYERS = ["", "", ""];   // blank: placeholders show "Player N"
+const STORE_KEY = "couchquiz.v1";
+
+/* =====================================================================
+   STORAGE — names, played categories and the game in progress survive
+   reloads (mobile browsers discard background tabs). Failures are
+   ignored: the game still works without storage.
+   ===================================================================== */
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; }
+}
+function saveStore() {
+  const data = {
+    players,
+    played: [...played],
+    game: state && {
+      board: state.board.map(c => c.name),
+      used: state.used,
+      scores: state.scores
+    }
+  };
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const saved = loadStore();
+let players = Array.isArray(saved.players) && saved.players.length >= MIN_PLAYERS
+  ? saved.players.slice(0, MAX_PLAYERS) : DEFAULT_PLAYERS.slice();
+let played = new Set(saved.played || []);   // category names used in past games
+let state = null;                           // the game in progress
+let picked = [];                            // category names chosen on setup
+let view = "setup";                         // setup | game
+
+const byName = name => CATEGORIES.find(c => c.name === name);
+const playerName = i => (players[i] || "").trim() || "Player " + (i + 1);
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function restoreGame(g) {
+  if (!g || !Array.isArray(g.board) || !Array.isArray(g.scores)) return null;
+  const board = g.board.map(byName);
+  if (board.length !== BOARD_SIZE || board.some(c => !c)) return null;
+  if (g.scores.length !== players.length) return null;
+  return { board, used: g.used || {}, scores: g.scores, open: null, answering: null, phase: "board" };
+}
+
+// Fresh categories first, then ones already played, each group shuffled.
+function randomPick() {
+  const names = CATEGORIES.map(c => c.name);
+  const fresh = names.filter(n => !played.has(n));
+  const stale = names.filter(n => played.has(n));
+  return shuffle(fresh).concat(shuffle(stale)).slice(0, BOARD_SIZE);
+}
+
+function startGame(names) {
+  const keep = state && state.scores.length === players.length;
+  state = {
+    board: shuffle(names.map(byName)),
+    used: {},                        // "col-row" -> true
+    scores: keep ? state.scores : new Array(players.length).fill(0),
+    open: null,                      // { cat, idx, value }
+    answering: null,                 // player index while judging
+    phase: "board"                   // board | clue | judge | answer
+  };
+  names.forEach(n => played.add(n));
+  // Once everything has been played, start the "fresh" cycle again.
+  if (played.size >= CATEGORIES.length) played = new Set(names);
+  view = "game";
+  render();
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const boardEl = $("board");
+const scoresEl = $("scores");
+const modal = $("modal");
+const setupEl = $("setup");
+
+function el(tag, className, text) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function render() {
+  saveStore();
+  setupEl.classList.toggle("show", view === "setup");
+  if (view === "setup") return renderSetup();
+  renderScores();
+  renderBoard();
+  renderModal();
+}
+
+function renderScores() {
+  scoresEl.innerHTML = "";
+  state.scores.forEach((score, i) => {
+    const d = el("div", "player");
+    d.appendChild(el("div", "nm", playerName(i)));
+    d.appendChild(el("div", "sc" + (score < 0 ? " neg" : ""), String(score)));
+    scoresEl.appendChild(d);
+  });
+}
+
+function renderBoard() {
+  boardEl.innerHTML = "";
+  state.board.forEach(cat => boardEl.appendChild(el("div", "cat", cat.name)));
+  VALUES.forEach((value, row) => {
+    state.board.forEach((cat, col) => {
+      const b = el("button", "clue-btn");
+      if (state.used[col + "-" + row]) {
+        b.disabled = true;
+      } else {
+        b.textContent = value;
+        b.addEventListener("click", () => openClue(col, row, value));
+      }
+      boardEl.appendChild(b);
+    });
+  });
+}
+
+function renderModal() {
+  const stage = $("mStage");
+  stage.innerHTML = "";
+  if (!state.open) {
+    modal.classList.remove("show");
+    return;
+  }
+  modal.classList.add("show");
+  const { cat, idx, value } = state.open;
+  const category = state.board[cat];
+  const [question, answer, mediaUrl] = category.clues[idx];
+
+  $("mCat").textContent = category.name + " — " + value;
+  $("mText").textContent = question;
+
+  // Optional third element: a link to play the clip somewhere else.
+  const mediaEl = $("mMedia");
+  mediaEl.innerHTML = "";
+  if (mediaUrl) {
+    const play = el("a", "btn ghost", "▶ Play the clip");
+    play.href = mediaUrl;
+    play.target = "_blank";
+    play.rel = "noopener noreferrer";
+    mediaEl.appendChild(play);
+  }
+
+  const ansEl = $("mAnswer");
+  ansEl.textContent = "Answer: " + answer;
+  ansEl.classList.toggle("hidden", state.phase === "clue");
+
+  const addRow = (buttons, label) => {
+    if (label) stage.appendChild(el("div", "hint", label));
+    const row = el("div", "row");
+    row.style.marginTop = "14px";
+    buttons.forEach(b => row.appendChild(b));
+    stage.appendChild(row);
+  };
+  const button = (cls, text, fn) => {
+    const b = el("button", cls, text);
+    b.addEventListener("click", fn);
+    return b;
+  };
+
+  if (state.phase === "clue") {
+    addRow(state.scores.map((_, i) => button("btn", playerName(i), () => pickPlayer(i))), "Who is answering?");
+    addRow([button("btn ghost", "Nobody knows — reveal", reveal)]);
+  }
+
+  if (state.phase === "judge") {
+    // Everyone shares one screen, so the answer is already public.
+    // No steals: score it and move straight on.
+    addRow([
+      button("btn", "Correct  +" + value, () => judge(true)),
+      button("btn bad", "Wrong  −" + value, () => judge(false))
+    ], playerName(state.answering) + " answering — was it right?");
+  }
+
+  if (state.phase === "answer") {
+    addRow([button("btn", "Back to board", closeClue)]);
+  }
+  modal.scrollTop = 0;
+}
+
+function renderSetup() {
+  const list = $("playerList");
+  list.innerHTML = "";
+  players.forEach((name, i) => {
+    const row = el("div", "pl");
+    const input = el("input");
+    input.value = name;
+    input.placeholder = "Player " + (i + 1);
+    input.maxLength = 16;
+    input.setAttribute("aria-label", "Player " + (i + 1) + " name");
+    // Update in place: re-rendering on every keystroke would drop focus.
+    input.addEventListener("input", () => { players[i] = input.value; saveStore(); });
+    row.appendChild(input);
+    const rm = el("button", "", "×");
+    rm.title = "Remove player";
+    rm.disabled = players.length <= MIN_PLAYERS;
+    rm.addEventListener("click", () => removePlayer(i));
+    row.appendChild(rm);
+    list.appendChild(row);
+  });
+  $("addPlayer").disabled = players.length >= MAX_PLAYERS;
+
+  const grid = $("catGrid");
+  grid.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    const on = picked.includes(cat.name);
+    const chip = el("button", "chip" + (on ? " on" : ""), cat.name);
+    if (played.has(cat.name)) chip.appendChild(el("span", "tag", "played"));
+    chip.addEventListener("click", () => toggleCategory(cat.name));
+    grid.appendChild(chip);
+  });
+
+  const left = BOARD_SIZE - picked.length;
+  $("catHead").textContent = left > 0
+    ? "Pick " + left + (picked.length ? " more" : "") + " categor" + (left === 1 ? "y" : "ies")
+    : "Categories ready";
+  $("startGame").disabled = picked.length !== BOARD_SIZE;
+  $("startGame").textContent = state && state.scores.length === players.length
+    ? "Start (scores carry over)" : "Start";
+  $("backToGame").classList.toggle("hidden", !state);
+}
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+function openClue(cat, idx, value) {
+  state.open = { cat, idx, value };
+  state.phase = "clue";
+  render();
+}
+
+function pickPlayer(i) {
+  state.answering = i;
+  state.phase = "judge";
+  render();
+}
+
+function reveal() {
+  state.phase = "answer";
+  render();
+}
+
+function judge(correct) {
+  const { value } = state.open;
+  state.scores[state.answering] += correct ? value : -value;
+  closeClue();
+}
+
+function closeClue() {
+  const { cat, idx } = state.open;
+  state.used[cat + "-" + idx] = true;
+  state.open = null;
+  state.answering = null;
+  state.phase = "board";
+  render();
+}
+
+function toggleCategory(name) {
+  if (picked.includes(name)) picked = picked.filter(n => n !== name);
+  else if (picked.length < BOARD_SIZE) picked = picked.concat(name);
+  render();
+}
+
+function addPlayer() {
+  if (players.length < MAX_PLAYERS) players.push("");
+  render();
+}
+
+function removePlayer(i) {
+  if (players.length > MIN_PLAYERS) players.splice(i, 1);
+  render();
+}
+
+function showSetup() {
+  picked = [];
+  view = "setup";
+  render();
+}
+
+function resetScores() {
+  state.scores = new Array(players.length).fill(0);
+  render();
+}
+
+/* =====================================================================
+   CONTROLS
+   ===================================================================== */
+$("toSetup").addEventListener("click", showSetup);
+$("resetScores").addEventListener("click", () => {
+  if (confirm("Reset all scores to zero?")) resetScores();
+});
+$("addPlayer").addEventListener("click", addPlayer);
+$("randomCats").addEventListener("click", () => { picked = randomPick(); render(); });
+$("clearCats").addEventListener("click", () => { picked = []; render(); });
+$("startGame").addEventListener("click", () => {
+  if (picked.length === BOARD_SIZE) startGame(picked);
+});
+$("backToGame").addEventListener("click", () => {
+  // Player count may have changed on setup; scores must line up with players.
+  if (state.scores.length !== players.length) state = null;
+  view = state ? "game" : "setup";
+  render();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && view === "game" && state.open && state.phase === "answer") closeClue();
+});
+
+state = restoreGame(saved.game);
+view = state ? "game" : "setup";
+render();
+</script>
+</body>
+</html>
