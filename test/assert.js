@@ -70,6 +70,16 @@ ok(JSON.stringify(again('state.scores'))===JSON.stringify(state.scores), 'reload
 ok(again('state.used')['2-5']===true, 'reload keeps used tiles');
 ok(again('players').join()==='Ann,Bo,Cy', 'reload keeps player names');
 
+openClue(3,1,200); pickPlayer(2); render();
+const mid = boot(store);
+ok(mid('state.phase')==='judge' && mid('state.open.idx')===1 && mid('state.answering')===2, 'reload reopens a clue being judged');
+judge(true); judge(true); closeClue();
+ok(state.scores[2]===200, 'double tap on judge scores once');
+
+ok(boot({'couchquiz.v1': JSON.stringify({played: 5, players: [1, 2]})})('view')==='setup', 'corrupt storage falls back to setup');
+ok(boot({'couchquiz.v1': '{not json'})('players.length')===3, 'unparseable storage uses defaults');
+ok(boot({'couchquiz.v1': JSON.stringify({played: ['Denmark']})})('played.size')===0, 'unknown played categories dropped');
+
 // ---- new board ----
 const before = state.scores.slice();
 showSetup();
@@ -77,8 +87,13 @@ ok(view==='setup' && picked.length===0, 'new board opens setup');
 startGame(randomPick());
 ok(JSON.stringify(state.scores)===JSON.stringify(before), 'new board keeps scores');
 ok(Object.keys(state.used).length===0, 'new board clears tiles');
-showSetup(); addPlayer(); startGame(randomPick());
-ok(state.scores.length===4 && state.scores.every(s=>s===0), 'changing player count resets scores');
+state.scores = [300, 0, -100];
+showSetup(); removePlayer(0); addPlayer();
+ok(JSON.stringify(state.scores)==='[0,-100,0]', 'removing a player drops only their score, new player starts at 0');
+view = 'game'; render();
+ok(state.scores.length===players.length, 'back to game after player change keeps scores aligned');
+startGame(randomPick());
+ok(JSON.stringify(state.scores)==='[0,-100,0]', 'new board after player change keeps scores');
 resetScores();
 ok(state.scores.every(s=>s===0), 'reset scores');
 

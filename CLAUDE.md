@@ -30,9 +30,11 @@ or Wrong (−value) → back to the board either way. Wrong answers go negative.
 
 "Nobody knows" reveals the answer without changing any score.
 
-"New board" returns to setup; scores carry over unless the player count
-changed. Player names, played categories and the game in progress are saved in
-`localStorage` so a mobile browser discarding the tab doesn't lose the game.
+"New board" returns to setup; scores carry over. Adding a player starts them at
+0 and removing one drops only their score, so scores stay aligned with names.
+Player names, played categories and the game in progress (including an open
+clue, so a reload can't replay a seen answer) are saved in `localStorage` so a
+mobile browser discarding the tab doesn't lose the game.
 
 The board is 6 categories x 6 clues, valued 100-600. No final round and no
 bonus wager tiles (not requested; both would need wager entry).
@@ -140,7 +142,7 @@ node test/leak.cjs   # answer leakage in clues
 
 **A passing logic suite does not mean the game works.** The stub's
 `classList.add` is a no-op, so a missing-`show`-class bug once made every clue
-invisible while all 20 tests passed. Any change touching `render*` must be
+invisible while the whole suite passed. Any change touching `render*` must be
 clicked through in a real browser before committing.
 
 Browser checks so far have used the Safari MCP (`mcp__safari-mcp-stp__*`); the
