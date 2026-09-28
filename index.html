@@ -317,7 +317,7 @@ const CATEGORIES = [
       ["This is the only letter that does not appear in the name of any US state", "Q"],
       ["Ten days vanished from October 1582 under this reform, and Britain held out until 1752, by which point it had to skip eleven", "The Gregorian calendar"],
       ["This 1815 Indonesian eruption caused the following 'year without a summer', crop failures across Europe, and indirectly the writing of 'Frankenstein'", "Mount Tambora"],
-      ["This irrational number, the limit of the ratio between consecutive Fibonacci numbers, appears when a line is divided so the whole is to the larger part as the larger is to the smaller", "The golden ratio"],
+      ["Le Grand K, a platinum-iridium cylinder kept near Paris, stopped defining the kilogram in 2019, when the unit was redefined using this physical constant", "The Planck constant"],
       ["This Prussian naturalist has more places, plants and animals named after him than anyone else, and mapped climate zones decades before the word 'ecology' existed", "Alexander von Humboldt"]
     ]
   },
@@ -329,7 +329,7 @@ const CATEGORIES = [
       ["This 1927 German expressionist epic was so expensive it nearly bankrupted its studio, and its robot design shaped a century of science fiction", "Metropolis"],
       ["This 1941 film lost Best Picture to 'How Green Was My Valley' and was suppressed by the tycoon it satirised", "Citizen Kane"],
       ["This 2020 Christopher Nolan film takes its title from the Sator Square, a Latin word square found scratched into a wall at Pompeii", "Tenet"],
-      ["This 1902 French short featured a capsule landing in the eye of a face in the sky and is often called the first science fiction film", "A Trip to the Moon"]
+      ["The top prize at the very first Academy Awards went to this 1927 silent epic about American fighter pilots in WWI", "Wings"]
     ]
   },
   {
@@ -339,7 +339,7 @@ const CATEGORIES = [
       ["This spice, the world's most expensive by weight, requires roughly 150,000 flowers for a single kilogram", "Saffron"],
       ["The name of this cured pork, essential to a true carbonara, comes from the Italian word for 'cheek'", "Guanciale"],
       ["This Japanese seaweed yielded the 1908 discovery of the fifth basic taste", "Kombu"],
-      ["This fruit's protein-digesting enzyme, bromelain, is the reason it stops gelatine from setting and stings the tongue", "Pineapple"],
+      ["This numbing spice from China's southwest is the dried husk of a berry from the citrus family, and makes the lips buzz and tingle", "Sichuan pepper"],
       ["This 19th-century French chef invented the brigade kitchen hierarchy and codified the five mother sauces", "Auguste Escoffier"]
     ]
   },
@@ -350,7 +350,7 @@ const CATEGORIES = [
       ["This feature was invented by a user, not the company: Chris Messina proposed it in a 2007 post to group conversations", "The hashtag"],
       ["This service began as a podcasting platform called Odeo before pivoting when iTunes added podcasts and made it obsolete", "Twitter"],
       ["This site's founders built it as a dating service called Tune In Hook Up before repurposing the video-upload code", "YouTube"],
-      ["This photo app was originally a bloated location check-in service called Burbn, stripped down to one feature", "Instagram"],
+      ["Before it was renamed Snapchat in 2011, the disappearing-photo app launched under this name", "Picaboo"],
       ["Usenet regulars once braced for a yearly wave of clueless new students each autumn; when AOL opened the floodgates in 1993, they named the permanent version of it this", "Eternal September"]
     ]
   },
@@ -370,7 +370,7 @@ const CATEGORIES = [
     clues: [
       ["He died in a 1521 battle in the Philippines, so Juan Sebastián Elcano finished the first voyage around the world", "Ferdinand Magellan"],
       ["Mansa Musa ruled this West African realm; his 1324 hajj reportedly handed out so much gold that its value fell in Cairo", "Mali"],
-      ["Hannibal's 216 BC victory over Rome, still studied as the textbook double envelopment", "Battle of Cannae"],
+      ["Hannibal's 216 BC rout of Rome, still studied as the textbook double envelopment", "Battle of Cannae"],
       ["Haiti's revolutionary leader, lured to a parley in 1802, shipped to France, and left to die in a fort in the Jura mountains", "Toussaint Louverture"],
       ["This Ming eunuch admiral led seven treasure-fleet voyages from 1405 to 1433, reaching Malindi in East Africa", "Zheng He"],
       ["Bolivia lost its coastline to Chile in this 1879-1884 war, fought largely over nitrate deposits in the Atacama", "War of the Pacific"]
@@ -468,9 +468,9 @@ const CATEGORIES = [
     name: "Architecture",
     clues: [
       ["Hit by a Barcelona tram in 1926, this architect is buried in the crypt of the basilica he never finished", "Antoni Gaudi"],
+      ["This French engineer designed the internal iron framework that holds up the Statue of Liberty", "Gustave Eiffel"],
       ["This Chinese-American architect designed the Louvre's glass pyramid, which opened in 1989", "I. M. Pei"],
       ["This Danish architect quit the Sydney Opera House project in 1966 and never returned to see it finished", "Jorn Utzon"],
-      ["This French engineer designed the internal iron framework that holds up the Statue of Liberty", "Gustave Eiffel"],
       ["Brunelleschi's 15th-century dome, built without wooden centring, crowns a cathedral with this formal name", "Santa Maria del Fiore"],
       ["He designed Chicago's 1885 Home Insurance Building, often called the first skyscraper, and trained Louis Sullivan", "William Le Baron Jenney"]
     ]
@@ -529,6 +529,116 @@ const CATEGORIES = [
       ["Most of Europe's vineyards had to be regrafted onto American rootstock after this sap-sucking pest arrived in the 1860s", "Phylloxera"],
       ["At the 1976 'Judgment of Paris' blind tasting, the top white was a 1973 Chardonnay from this Napa winery", "Chateau Montelena"]
     ]
+  },
+  {
+    name: "Animals",
+    clues: [
+      ["This creature has three hearts, blue blood, and most of its neurons in its arms", "Octopus"],
+      ["This marsupial has fingerprints so close to ours that even under a microscope they are hard to tell apart", "Koala"],
+      ["This burrowing marsupial is famous for producing cube-shaped droppings", "Wombat"],
+      ["New Zealand's flightless, nocturnal, owl-faced parrot is the heaviest parrot in the world", "Kakapo"],
+      ["The mantis shrimp's club strikes so fast that the water tears into collapsing vapour bubbles, a phenomenon called this", "Cavitation"],
+      ["The axolotl keeps its gills and larval form into adulthood, the textbook case of this evolutionary trait", "Neoteny"]
+    ]
+  },
+  {
+    name: "Human Body",
+    clues: [
+      ["The stirrup, the smallest bone we have, sits in this organ", "The ear"],
+      ["This organ can regrow to full size after surgeons remove most of it", "The liver"],
+      ["By mass, this is the most abundant element in a human, ahead of carbon", "Oxygen"],
+      ["The hyoid is the only bone that does not form a joint with any other bone; it anchors this organ", "The tongue"],
+      ["An iron rod blew through Phineas Gage's skull in 1848; his changed personality taught doctors about this part of the brain", "Frontal lobe"],
+      ["Henrietta Lacks' cells, taken without consent in 1951, became the first immortal human cell line, known by this name", "HeLa"]
+    ]
+  },
+  {
+    name: "Inventions",
+    clues: [
+      ["Percy Spencer noticed a chocolate bar melting in his pocket while working beside a radar magnetron, and patented this appliance", "Microwave oven"],
+      ["This Hungarian journalist patented the modern ballpoint pen in 1938, and in Britain the pen is still called by his surname", "Laszlo Biro"],
+      ["Bubble Wrap was created in 1957 by two engineers who were actually trying to make this", "Textured wallpaper"],
+      ["One of the first webcams was pointed at this in a Cambridge University computer lab, so staff wouldn't walk over for nothing", "A coffee pot"],
+      ["Hollywood star Hedy Lamarr co-patented this technique in 1942 to stop Allied torpedo guidance being jammed", "Frequency hopping"],
+      ["Recovered from a Greek shipwreck in 1901, this corroded bronze gearwork predicted eclipses more than 2,000 years ago", "Antikythera mechanism"]
+    ]
+  },
+  {
+    name: "Crime",
+    clues: [
+      ["Frank Abagnale's claimed exploits as a con man posing as a pilot and a doctor became this 2002 Spielberg film", "Catch Me If You Can"],
+      ["After years of failed attempts to charge him with anything else, Al Capone was convicted in 1931 of this", "Tax evasion"],
+      ["A 1971 hijacker who parachuted from the back stairs of a Boeing 727 with $200,000 and was never identified is known by this name", "D. B. Cooper"],
+      ["The 1990 theft of 13 works, including a Vermeer, from this Boston museum is still unsolved, and the empty frames still hang", "Isabella Stewart Gardner Museum"],
+      ["In 2003 thieves emptied most of the vault at this Belgian city's Diamond Centre, taking gems worth over $100 million", "Antwerp"],
+      ["The first murder solved by fingerprint evidence was in 1892, in this country, where Juan Vucetich had just built a fingerprint bureau", "Argentina"]
+    ]
+  },
+  {
+    name: "Programming",
+    clues: [
+      ["Brendan Eich wrote the first version of this web language in about ten days in 1995", "JavaScript"],
+      ["Grace Hopper's team taped a moth into the Harvard Mark II logbook in 1947 as the 'first actual case' of one of these", "A bug"],
+      ["He wrote Git in 2005 after the Linux kernel lost its free version-control tool", "Linus Torvalds"],
+      ["Ada Lovelace's 1843 notes on this unbuilt Babbage machine included an algorithm for Bernoulli numbers", "The Analytical Engine"],
+      ["Edsger Dijkstra's famous 1968 letter was titled with this statement 'Considered Harmful'", "Go To"],
+      ["Tony Hoare called this, which he added to ALGOL W in 1965, his 'billion-dollar mistake'", "The null reference"]
+    ]
+  },
+  {
+    name: "Startups",
+    clues: [
+      ["Travis Kalanick and Garrett Camp's company launched in 2009 as a black-car service in San Francisco", "Uber"],
+      ["Airbnb's founders kept the company alive in 2008 by selling election-themed boxes of this", "Breakfast cereal"],
+      ["Drew Houston started Dropbox after forgetting this on a bus trip from Boston to New York", "A USB flash drive"],
+      ["Founded by Paul Graham and others in 2005, this accelerator gave early funding to Airbnb, Dropbox and Reddit", "Y Combinator"],
+      ["Stewart Butterfield twice turned a failing online game into a hit: first this photo-sharing site, then Slack", "Flickr"],
+      ["In 1999 this web portal's CEO turned down a chance to buy Google for under $1 million", "Excite"]
+    ]
+  },
+  {
+    name: "Gadgets",
+    clues: [
+      ["Sony's 1979 portable cassette player launched a whole category of personal music", "Walkman"],
+      ["Sony's 1975 home video format that lost the tape war to JVC's VHS", "Betamax"],
+      ["Before it renamed itself after its famous phone, the BlackBerry maker was called this", "Research In Motion"],
+      ["Jeff Hawkins carried a block of wood in his shirt pocket to test the size of this handheld organiser", "PalmPilot"],
+      ["Nokia was founded in 1865 as this kind of business", "A paper (pulp) mill"],
+      ["The inventor of the Segway also created a portable insulin pump and the FIRST robotics competition", "Dean Kamen"]
+    ]
+  },
+  {
+    name: "Fashion",
+    clues: [
+      ["In 1926 Vogue compared Coco Chanel's take on this garment to Ford's Model T", "The little black dress"],
+      ["This Bavarian-born merchant patented copper-riveted work trousers in 1873 with tailor Jacob Davis", "Levi Strauss"],
+      ["Crocs were first designed and sold in 2002 as footwear for this activity", "Boating"],
+      ["Harper's Bazaar editor Carmel Snow gave Christian Dior's 1947 debut collection this name", "The New Look"],
+      ["Hermes started out in Paris in 1837 making these, which is why its logo shows a carriage", "Horse harnesses"],
+      ["The cardigan is named after the 7th Earl of Cardigan, who led this doomed 1854 cavalry attack in the Crimean War", "Charge of the Light Brigade"]
+    ]
+  },
+  {
+    name: "Brands",
+    clues: [
+      ["Nike is named after the Greek goddess of this", "Victory"],
+      ["This Swedish company's name comes from its founder's initials plus his family farm and home village", "IKEA"],
+      ["The Starbucks logo shows this twin-tailed creature from Greek myth", "A siren"],
+      ["Lego takes its name from the Danish 'leg godt', meaning this", "Play well"],
+      ["Despite its Danish-sounding made-up name, Haagen-Dazs was founded in 1960 in this New York borough", "The Bronx"],
+      ["The stars in Subaru's logo depict this cluster, which is what the Japanese name means", "The Pleiades"]
+    ]
+  },
+  {
+    name: "Board Games",
+    clues: [
+      ["In chess, this is the only piece that can jump over others", "The knight"],
+      ["These two letters are each worth 10 points in English Scrabble", "Q and Z"],
+      ["Lizzie Magie's 1904 Landlord's Game, meant to show the evils of land-grabbing, became this", "Monopoly"],
+      ["Two journalists invented Trivial Pursuit in 1979 in this country", "Canada"],
+      ["The director of the Oscar-winning short The Red Balloon also invented this 1957 world-conquest game", "Risk"],
+      ["Backgammon stakes can be raised with this device, added in 1920s New York gambling clubs", "The doubling cube"]
+    ]
   }
 ];
 
@@ -585,7 +695,8 @@ const byName = name => CATEGORIES.find(c => c.name === name);
 // `hyphens: none`, which splits words that would fit on wider screens.
 const SOFT_HYPHENS = {
   Knowledge: "Know\u00ADledge", Mythology: "Mytho\u00ADlogy", Literature: "Litera\u00ADture",
-  Architecture: "Archi\u00ADtecture", Geography: "Geo\u00ADgraphy", Television: "Tele\u00ADvision"
+  Architecture: "Archi\u00ADtecture", Geography: "Geo\u00ADgraphy", Television: "Tele\u00ADvision",
+  Inventions: "Inven\u00ADtions", Programming: "Program\u00ADming"
 };
 const narrow = typeof matchMedia === "function" ? matchMedia("(max-width: 600px)") : { matches: false };
 const catLabel = name => narrow.matches ? name.replace(/[A-Za-z]+/g, w => SOFT_HYPHENS[w] || w) : name;
