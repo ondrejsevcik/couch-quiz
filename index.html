@@ -19,6 +19,7 @@
     --ink: #ffffff;
     --dead: #04081c;
     --bad: #ff6b6b;
+    --bad-btn: #c62828;
     --pad: clamp(6px, 1.4vw, 14px);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,8 +38,12 @@
     gap: var(--pad);
     user-select: none;
     -webkit-user-select: none;
+    touch-action: manipulation; /* no double-tap zoom mid-game; pinch still works */
   }
   button, input { font-family: inherit; }
+  input { user-select: text; -webkit-user-select: text; }
+  button:focus-visible, a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .btn:focus-visible { outline-color: #000; outline-offset: -5px; }
   button { cursor: pointer; border: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .hidden { display: none !important; }
 
@@ -62,6 +67,7 @@
   }
   #controls { display: flex; gap: 8px; }
   .small { background: #223; color: #fff; padding: 8px 14px; min-height: 36px; border-radius: 6px; font-size: 13px; }
+  .small:disabled, .pl button:disabled { opacity: .4; cursor: default; }
 
   /* ---------- scores ---------- */
   #scores {
@@ -80,8 +86,13 @@
     padding: 4px 16px;
     text-align: center;
     min-width: 110px;
+    max-width: 240px;
+    overflow: hidden;
   }
-  .player .nm { font-size: 13px; letter-spacing: 2px; opacity: .85; text-transform: uppercase; }
+  .player .nm {
+    font-size: 13px; letter-spacing: 2px; opacity: .85; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .player .sc { font-size: 22px; font-weight: bold; color: var(--gold); }
   .player .sc.neg { color: var(--bad); }
 
@@ -108,7 +119,6 @@
     font-size: clamp(9px, 1.2vw, 17px);
     letter-spacing: 1px;
     line-height: 1.15;
-    overflow-wrap: anywhere;
     border-bottom: 4px solid #000;
   }
   .clue-btn {
@@ -126,8 +136,8 @@
 
   /* phones in portrait: tight columns */
   @media (max-width: 600px) {
-    .cat { letter-spacing: 0; padding: 6px 2px; border-bottom-width: 3px; }
-    .player { min-width: 0; padding: 3px 10px; flex: 1 1 28%; }
+    .cat { letter-spacing: 0; padding: 6px 2px; border-bottom-width: 3px; font-size: clamp(9px, 2.4vw, 13px); }
+    .player { min-width: 0; max-width: none; padding: 3px 10px; flex: 1 1 28%; }
     .player .nm { font-size: 11px; letter-spacing: 1px; }
     .player .sc { font-size: 18px; }
   }
@@ -137,7 +147,10 @@
     h1 { display: none; }
     #controls { order: 3; }
     body { gap: 6px; }
-    .player { padding: 2px 12px; display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+    #scores { flex-wrap: nowrap; }
+    .player { padding: 2px 10px; display: flex; gap: 8px; align-items: baseline; min-width: 0; flex: 1 1 0; justify-content: center; }
+    .player .sc { flex-shrink: 0; }
+    .clue-btn { font-size: clamp(11px, 4.5vh, 24px); }
     .player .sc { font-size: 16px; }
     .cat { padding: 4px 2px; }
     .small { min-height: 30px; padding: 4px 12px; }
@@ -188,12 +201,16 @@
     justify-content: center;
   }
   .btn.ghost { background: #fff; }
-  .btn.bad { background: var(--bad); color: #fff; }
+  .btn.bad { background: var(--bad-btn); color: #fff; }
+  /* who-is-answering buttons: equal widths, long names truncate */
+  #mStage { width: 100%; }
+  .row.players { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); max-width: 720px; margin-inline: auto; }
+  .row.players .btn { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .btn:disabled { opacity: .4; cursor: default; }
   .hint { font-size: 15px; opacity: .75; letter-spacing: 1px; }
 
   /* ---------- setup ---------- */
-  #setup { background: var(--bg); z-index: 20; gap: 22px; }
+  #setup { background: var(--bg); z-index: 20; gap: 22px; padding-bottom: 0; }
   #setup h1 { font-size: clamp(28px, 6vw, 56px); margin-top: 8px; }
   #setup section { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 10px; }
   #setup h2 { font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
@@ -211,7 +228,7 @@
   }
   .pl input:focus { outline: 2px solid var(--gold); }
   .pl button { background: #223; color: #fff; width: 44px; border-radius: 8px; font-size: 20px; }
-  #catGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  #catGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
   .chip {
     background: var(--tile);
     color: #fff;
@@ -226,10 +243,15 @@
     position: relative;
   }
   .chip.on { border-color: var(--gold); background: var(--tile-hi); color: var(--gold); }
-  .chip .tag { display: block; font-size: 10px; font-weight: normal; opacity: .6; letter-spacing: 1px; margin-top: 3px; }
+  .chip .tag { display: block; font-size: 11px; font-weight: normal; opacity: .8; letter-spacing: 1px; margin-top: 3px; }
   .setup-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  #startBar { position: sticky; bottom: 0; padding: 12px 0 4px; background: var(--bg); width: 100%; max-width: 900px; justify-content: center; }
+  #startBar { position: sticky; bottom: 0; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); background: var(--bg); width: 100%; max-width: 900px; justify-content: center; }
 
+  /* small phones: long clue + 6 players must still fit without scrolling */
+  @media (max-height: 700px) {
+    #mText { font-size: clamp(17px, min(4.2vw, 4.5vh), 60px); }
+    #modal .btn { min-height: 42px; padding: 8px 16px; }
+  }
   /* clue screen on short (landscape phone) viewports: keep the buttons in view */
   @media (max-height: 500px) {
     #modal { gap: 10px; padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
@@ -242,7 +264,7 @@
 </head>
 <body>
 
-<header>
+<header id="header">
   <h1>Couch Quiz</h1>
   <div id="controls">
     <button class="small" id="toSetup">New board</button>
@@ -252,7 +274,7 @@
 <div id="scores"></div>
 <div id="board"></div>
 
-<div id="modal" class="panel">
+<div id="modal" class="panel" role="dialog" aria-modal="true" aria-labelledby="mText">
   <div id="mCat"></div>
   <div id="mText"></div>
   <div id="mMedia"></div>
@@ -268,7 +290,7 @@
     <div class="setup-bar"><button class="small" id="addPlayer">+ Add player</button></div>
   </section>
   <section>
-    <h2 id="catHead">Pick 6 categories</h2>
+    <h2 id="catHead" aria-live="polite">Pick 6 categories</h2>
     <div class="setup-bar">
       <button class="small" id="randomCats">Random 6</button>
       <button class="small" id="clearCats">Clear</button>
@@ -554,8 +576,19 @@ let played = new Set(Array.isArray(saved.played)
 let state = null;                           // the game in progress
 let picked = [];                            // category names chosen on setup
 let view = "setup";                         // setup | game
+let returnFocus = null;                     // board tile index to refocus after a clue
 
 const byName = name => CATEGORIES.find(c => c.name === name);
+// Soft hyphens for long words, so narrow phone columns break them cleanly
+// instead of mid-letter. Tests require an entry for every word of 9+ letters.
+// Applied only on narrow screens: WebKit breaks at soft hyphens even with
+// `hyphens: none`, which splits words that would fit on wider screens.
+const SOFT_HYPHENS = {
+  Knowledge: "Know\u00ADledge", Mythology: "Mytho\u00ADlogy", Literature: "Litera\u00ADture",
+  Architecture: "Archi\u00ADtecture", Geography: "Geo\u00ADgraphy", Television: "Tele\u00ADvision"
+};
+const narrow = typeof matchMedia === "function" ? matchMedia("(max-width: 600px)") : { matches: false };
+const catLabel = name => narrow.matches ? name.replace(/[A-Za-z]+/g, w => SOFT_HYPHENS[w] || w) : name;
 const playerName = i => (players[i] || "").trim() || "Player " + (i + 1);
 
 function shuffle(arr) {
@@ -629,10 +662,20 @@ function el(tag, className, text) {
 function render() {
   saveStore();
   setupEl.classList.toggle("show", view === "setup");
+  // Keep keyboard and screen-reader focus inside whichever panel is on top.
+  const covered = view === "setup" || !!(state && state.open);
+  [$("header"), scoresEl, boardEl].forEach(e => { e.inert = covered; });
   if (view === "setup") return renderSetup();
   renderScores();
   renderBoard();
   renderModal();
+  if (returnFocus !== null && !state.open) {
+    // Focus the closed tile's next open neighbour, so keyboard play continues.
+    const tiles = [...boardEl.children].slice(BOARD_SIZE);
+    const next = tiles.slice(returnFocus).concat(tiles).find(t => !t.disabled);
+    if (next && next.focus) next.focus();
+    returnFocus = null;
+  }
 }
 
 function renderScores() {
@@ -647,11 +690,13 @@ function renderScores() {
 
 function renderBoard() {
   boardEl.innerHTML = "";
-  state.board.forEach(cat => boardEl.appendChild(el("div", "cat", cat.name)));
+  state.board.forEach(cat => boardEl.appendChild(el("div", "cat", catLabel(cat.name))));
   VALUES.forEach((value, row) => {
     state.board.forEach((cat, col) => {
       const b = el("button", "clue-btn");
-      if (state.used[col + "-" + row]) {
+      const used = state.used[col + "-" + row];
+      b.setAttribute("aria-label", cat.name + " " + value + (used ? " used" : ""));
+      if (used) {
         b.disabled = true;
       } else {
         b.textContent = value;
@@ -692,9 +737,9 @@ function renderModal() {
   ansEl.textContent = "Answer: " + answer;
   ansEl.classList.toggle("hidden", state.phase === "clue");
 
-  const addRow = (buttons, label) => {
+  const addRow = (buttons, label, cls) => {
     if (label) stage.appendChild(el("div", "hint", label));
-    const row = el("div", "row");
+    const row = el("div", "row" + (cls ? " " + cls : ""));
     row.style.marginTop = "14px";
     buttons.forEach(b => row.appendChild(b));
     stage.appendChild(row);
@@ -706,7 +751,7 @@ function renderModal() {
   };
 
   if (state.phase === "clue") {
-    addRow(state.scores.map((_, i) => button("btn", playerName(i), () => pickPlayer(i))), "Who is answering?");
+    addRow(state.scores.map((_, i) => button("btn", playerName(i), () => pickPlayer(i))), "Who is answering?", "players");
     addRow([button("btn ghost", "Nobody knows — reveal", reveal)]);
   }
 
@@ -723,6 +768,9 @@ function renderModal() {
     addRow([button("btn", "Back to board", closeClue)]);
   }
   modal.scrollTop = 0;
+  // Move keyboard focus to the first action of each step.
+  const first = stage.getElementsByTagName ? stage.getElementsByTagName("button")[0] : null;
+  if (first) first.focus();
 }
 
 function renderSetup() {
@@ -740,6 +788,7 @@ function renderSetup() {
     row.appendChild(input);
     const rm = el("button", "", "×");
     rm.title = "Remove player";
+    rm.setAttribute("aria-label", "Remove " + playerName(i));
     rm.disabled = players.length <= MIN_PLAYERS;
     rm.addEventListener("click", () => removePlayer(i));
     row.appendChild(rm);
@@ -751,7 +800,8 @@ function renderSetup() {
   grid.innerHTML = "";
   CATEGORIES.forEach(cat => {
     const on = picked.includes(cat.name);
-    const chip = el("button", "chip" + (on ? " on" : ""), cat.name);
+    const chip = el("button", "chip" + (on ? " on" : ""), catLabel(cat.name));
+    chip.setAttribute("aria-pressed", String(on));
     if (played.has(cat.name)) chip.appendChild(el("span", "tag", "played"));
     chip.addEventListener("click", () => toggleCategory(cat.name));
     grid.appendChild(chip);
@@ -762,7 +812,7 @@ function renderSetup() {
     ? "Pick " + left + (picked.length ? " more" : "") + " categor" + (left === 1 ? "y" : "ies")
     : "Categories ready";
   $("startGame").disabled = picked.length !== BOARD_SIZE;
-  $("startGame").textContent = state ? "Start (scores carry over)" : "Start";
+  $("startGame").textContent = state ? "Start (keep scores)" : "Start";
   $("backToGame").classList.toggle("hidden", !state);
 }
 
@@ -800,6 +850,7 @@ function closeClue() {
   if (!state.open) return;
   const { cat, idx } = state.open;
   state.used[cat + "-" + idx] = true;
+  returnFocus = idx * BOARD_SIZE + cat;
   state.open = null;
   state.answering = null;
   state.phase = "board";
@@ -855,6 +906,7 @@ $("backToGame").addEventListener("click", () => {
   view = "game";
   render();
 });
+if (narrow.addEventListener) narrow.addEventListener("change", render);
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && view === "game" && state.open && state.phase === "answer") closeClue();
 });

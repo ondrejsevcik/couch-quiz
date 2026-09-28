@@ -9,6 +9,9 @@ ok(CATEGORIES.every(c=>c.clues.every(q=>q.length>=2&&q.length<=3&&q[0]&&q[1])), 
 ok(CATEGORIES.every(c=>c.clues.every(q=>q.length<3||/^https:\/\//.test(q[2]))), 'media urls are https');
 ok(CATEGORIES.length>=BOARD_SIZE, 'pool has at least 6 categories');
 ok(new Set(CATEGORIES.map(c=>c.name)).size===CATEGORIES.length, 'category names unique');
+const longWords = CATEGORIES.flatMap(c=>c.name.match(/[A-Za-z]{9,}/g)||[]).filter(w=>!SOFT_HYPHENS[w]);
+ok(longWords.length===0, 'long category words need soft hyphens (phone columns): '+longWords);
+ok(Object.entries(SOFT_HYPHENS).every(([w,h])=>h.replace(/\u00AD/g,'')===w), 'soft hyphen entries spell their word');
 
 // ---- setup ----
 ok(view==='setup' && state===null, 'fresh load opens setup');

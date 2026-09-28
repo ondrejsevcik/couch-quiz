@@ -47,7 +47,8 @@ people play from a couch and won't scroll to reach the 600 row. Board rows use
 queries matter: `max-width: 600px` (portrait phone, tight columns) and
 `max-height: 500px` (landscape phone: title hidden, scores inline, compact
 clue screen so the judge buttons stay in view). Category names must be short —
-max ~12 characters per word — or they break mid-word in a phone column.
+max ~12 characters per word. Any word of 9+ letters needs an entry in
+`SOFT_HYPHENS` (tests enforce it) or it breaks mid-letter in a phone column.
 
 Check changes at 390x844, 844x390, 1024x768 and desktop.
 
