@@ -32,3 +32,7 @@ node test/leak.cjs   # clues that give away their own answer
 ```
 
 Node is only needed for tests, never to play.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
