@@ -21,8 +21,9 @@ game.
 ## Questions
 
 Clues live in the `CATEGORIES` array in `index.html` — 6 per category, easiest
-to hardest. They're written to be hard and fact-checked; see `CLAUDE.md` for
-the rules.
+to hardest. Each is a plain-English question ("Which country...?") that
+non-native speakers can follow. They're written to be hard and fact-checked;
+see `CLAUDE.md` for the rules.
 
 ## Tests
 

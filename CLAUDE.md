@@ -63,6 +63,14 @@ tech & internet, culture & lifestyle — so there's always something fresh to
 pick. Grow it by adding whole categories; no country- or group-specific
 categories (Denmark was dropped for that reason).
 
+### Wording: plain English, direct questions
+
+Clues are ordinary questions that ask for the answer — "Which country…?",
+"What is…?", "Who…?" — not the answer-first statement style ("This country…").
+Many players are not native English speakers, so use simple, common words and
+short sentences; avoid idioms, wordplay and rare vocabulary. Hard clues get
+their difficulty from the facts, not from the phrasing.
+
 ### Difficulty
 
 **Aim high — clues have repeatedly been written too easy and sent back.** These
