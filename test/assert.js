@@ -4,6 +4,7 @@ const walk = n => [n, ...(n.children||[]).flatMap(walk)];
 const btn = t => walk(els.mStage).find(e=>e._t&&e._t.startsWith(t));
 
 // ---- content invariants ----
+ok(CATEGORIES.every(c=>c.pool.length===100&&[1,2,3].map(l=>c.pool.filter(q=>q[0]===l).length).join()==='34,33,33'), 'every pool has 100 questions: 34/33/33 across levels');
 const MIN_PER_LEVEL = 2;
 ok(CATEGORIES.every(c=>[1,2,3].every(l=>c.pool.filter(q=>q[0]===l).length>=MIN_PER_LEVEL)), 'every category has at least '+MIN_PER_LEVEL+' questions per level');
 ok(CATEGORIES.every(c=>c.pool.every(q=>q.length===4&&[1,2,3].includes(q[0])&&q.slice(1).every(s=>typeof s==='string'&&s.trim()))), 'every entry is [level, question, answer, Estonian]');
