@@ -32,11 +32,13 @@ or Wrong (−value) → back to the board either way. Wrong answers go negative.
 
 "New board" returns to setup; scores carry over. Adding a player starts them at
 0 and removing one drops only their score, so scores stay aligned with names.
-Player names, played categories and the game in progress (including an open
-clue, so a reload can't replay a seen answer) are saved in `localStorage` so a
+Player names, played categories, seen questions and the game in progress
+(including an open clue, so a reload can't replay a seen answer) are saved in `localStorage` so a
 mobile browser discarding the tab doesn't lose the game.
 
-The board is 6 categories x 6 clues, valued 100-600. No final round and no
+The board is 6 categories x 6 clues, valued 100-600. Each category has a pool
+of questions; every new board draws 2 per level for each column, preferring
+questions not shown before, so boards don't repeat. No final round and no
 bonus wager tiles (not requested; both would need wager entry).
 
 ## Layout
@@ -54,23 +56,26 @@ Check changes at 390x844, 844x390, 1024x768 and desktop.
 
 ## Editing questions
 
-The `CATEGORIES` array at the top of the `<script>` block. Each category needs
-**exactly 6 clues**, ordered easiest → hardest, mapping to 100 through 600.
-Each clue is `["question text", "answer"]`. Tests enforce both invariants.
+The `CATEGORIES` array at the top of the `<script>` block. Each category has a
+`pool` of **100 questions**, each `[level, "question", "answer", "Estonian
+question"]`: 34 at level 1 (100/200), 33 at level 2 (300/400), 33 at level 3
+(500/600). Tests enforce the shape and counts.
 
-The pool (20 categories at last count) should stay broad — classic trivia,
+The questions were written from scratch for this repo. Don't import questions
+from trivia datasets or websites — licensing was the reason to write our own.
+
+The category list (30 at last count) should stay broad — classic trivia,
 tech & internet, culture & lifestyle — so there's always something fresh to
 pick. Grow it by adding whole categories; no country- or group-specific
 categories (Denmark was dropped for that reason).
 
 ### Estonian translation
 
-Some players read Estonian more easily than English, so every category also has
-`et: [6 strings]` — the six questions in Estonian, same order as `clues`. The
-clue screen shows the English question with the Estonian one smaller beneath it
+Some players read Estonian more easily than English, so every entry carries its
+question in Estonian as the fourth element. The clue screen shows the English question with the Estonian one smaller beneath it
 (side by side on landscape phones). Only the questions are translated: the UI,
-category names and answers stay English. Tests require all six for every
-category, so a new or edited clue needs its Estonian line too.
+category names and answers stay English. Tests require it on every entry, so a
+new or edited clue needs its Estonian line too.
 
 Translate in plain everyday Estonian, keep the facts and difficulty identical,
 and never let the translation give away the answer (the leak check covers `et`).
@@ -83,27 +88,22 @@ committing.
 Clues are ordinary questions that ask for the answer — "Which country…?",
 "What is…?", "Who…?" — not the answer-first statement style ("This country…").
 Many players are not native English speakers, so use simple, common words and
-short sentences; avoid idioms, wordplay and rare vocabulary. Hard clues get
+short sentences; avoid idioms, wordplay and rare vocabulary. Level 3 clues get
 their difficulty from the facts, not from the phrasing.
 
 ### Difficulty
 
-**Aim high — clues have repeatedly been written too easy and sent back.** These
-players are well-travelled adults who follow tech and culture. Calibrate so the
-100 is what everyone gets, the 300–400 splits the room, and the 600 is one
-nobody may take. A board where every clue gets answered is a failed board.
+**Easy to medium.** Super hard or niche questions kill the game: if nobody
+knows, nobody has fun. (An earlier "aim high" policy was reversed for exactly
+this reason.) Most clues on a board should get answered by someone.
 
-Rules of thumb:
+- **Level 1**: almost everyone at the table gets it.
+- **Level 2**: most people get it, maybe after a moment's thought.
+- **Level 3**: a well-read adult or casual fan knows it; about half the room.
 
-- If the answer is the single most famous example of its category, it's too
-  easy. Not the Mona Lisa, not Everest, not Tokyo. Go one layer down.
-- Prefer the *second* fact about a thing over the first: not "who painted the
-  Mona Lisa" but the detail only someone interested would know.
-- A good hard clue is still *gettable by reasoning* — an obscure fact plus a
-  path to it beats pure recall of a name nobody has heard.
-- Approach from an unexpected angle: consequences, origins, disputes, near
-  misses, the thing that almost happened.
-- Avoid clues answerable from the category name plus one common association.
+Nothing harder than level 3: no obscure names, dates or numbers nobody can
+reason their way to. If unsure whether a clue is too hard, it is. Avoid
+trivia only one country would know.
 
 ### Every question change requires a fact-check
 
