@@ -1,8 +1,10 @@
 const stop=new Set(['the','this','a','of','and','in','on','to','for','is','was','it','its','his','her','their','with','by','from','at','an','as','that','one','two','three','all','not','he','she','they']);
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ');
 let issues=0;
+// Check the English question and its Estonian translation against the answer.
+const withEt=cat=>cat.clues.flatMap(([q,a],i)=>[[q,a]].concat(cat.et&&cat.et[i]?[[cat.et[i],a,true]]:[]));
 for(const cat of CATEGORIES){
-  for(const [q,a] of cat.clues){
+  for(const [q,a] of withEt(cat)){
     const qn=' '+norm(q)+' ';
     const words=norm(a).split(/\s+/).filter(w=>w.length>3&&!stop.has(w));
     const leaked=words.filter(w=>qn.includes(' '+w));
@@ -19,12 +21,12 @@ console.log(issues?`${issues} potential leak(s)`:'no leaks found');
 
 // Cross-clue: does any clue mention another clue's answer?
 console.log('--- cross-clue mentions ---');
-const all=[]; for(const c of CATEGORIES) for(const [q,a] of c.clues) all.push({cat:c.name,q,a});
+const all=[]; for(const c of CATEGORIES) for(const [q,a,et] of withEt(c)) all.push({cat:c.name,q,a,et});
 let x=0;
 for(const item of all){
   const qn=' '+norm(item.q)+' ';
   for(const other of all){
-    if(other===item) continue;
+    if(other===item||other.et||other.a===item.a) continue;  // each answer once
     const w=norm(other.a).split(/\s+/).filter(t=>t.length>4&&!stop.has(t));
     if(w.length && w.every(t=>qn.includes(' '+t))){
       x++; console.log(`[${item.cat}] clue mentions answer "${other.a}" (from ${other.cat})\n   ${item.q}\n`);

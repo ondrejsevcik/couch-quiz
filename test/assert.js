@@ -7,6 +7,9 @@ const btn = t => walk(els.mStage).find(e=>e._t&&e._t.startsWith(t));
 ok(CATEGORIES.every(c=>c.clues.length===6), 'every category has exactly 6 clues');
 ok(CATEGORIES.every(c=>c.clues.every(q=>q.length>=2&&q.length<=3&&q[0]&&q[1])), 'every clue has question+answer (+optional media url)');
 ok(CATEGORIES.every(c=>c.clues.every(q=>q.length<3||/^https:\/\//.test(q[2]))), 'media urls are https');
+const etQs = CATEGORIES.map(c=>c.et);
+ok(etQs.every(e=>Array.isArray(e)&&e.length===6), 'every category has 6 Estonian questions');
+ok(etQs.every(e=>!e||e.every(q=>typeof q==='string'&&q.includes('?'))), 'Estonian lines are questions');
 ok(CATEGORIES.length>=BOARD_SIZE, 'pool has at least 6 categories');
 ok(new Set(CATEGORIES.map(c=>c.name)).size===CATEGORIES.length, 'category names unique');
 const longWords = CATEGORIES.flatMap(c=>c.name.match(/[A-Za-z]{9,}/g)||[]).filter(w=>!SOFT_HYPHENS[w]);
@@ -43,6 +46,7 @@ if (CATEGORIES.length >= 12) {
 // ---- play ----
 openClue(0,2,300);
 ok(state.phase==='clue','phase clue after open');
+ok(els.mTextEt._t===state.board[0].et[2], 'Estonian question shown under the English one');
 pickPlayer(1);
 ok(state.phase==='judge','phase judge after picking player');
 render();

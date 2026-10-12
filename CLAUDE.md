@@ -63,6 +63,21 @@ tech & internet, culture & lifestyle — so there's always something fresh to
 pick. Grow it by adding whole categories; no country- or group-specific
 categories (Denmark was dropped for that reason).
 
+### Estonian translation
+
+Some players read Estonian more easily than English, so every category also has
+`et: [6 strings]` — the six questions in Estonian, same order as `clues`. The
+clue screen shows the English question with the Estonian one smaller beneath it
+(side by side on landscape phones). Only the questions are translated: the UI,
+category names and answers stay English. Tests require all six for every
+category, so a new or edited clue needs its Estonian line too.
+
+Translate in plain everyday Estonian, keep the facts and difficulty identical,
+and never let the translation give away the answer (the leak check covers `et`).
+Use established Estonian titles and place names only when sure; otherwise keep
+the original. Have a fresh subagent review translations for accuracy before
+committing.
+
 ### Wording: plain English, direct questions
 
 Clues are ordinary questions that ask for the answer — "Which country…?",

@@ -185,6 +185,21 @@
     user-select: text;
     -webkit-user-select: text;
   }
+  /* Estonian translation under the English clue, for players with less English */
+  #mQ { display: flex; flex-direction: column; align-items: center; gap: clamp(10px, 2vh, 20px); }
+  #mTextEt {
+    font-size: clamp(16px, min(2.8vw, 4vh), 36px);
+    line-height: 1.3;
+    max-width: 30ch;
+    color: #c9d3ff;
+    padding-top: clamp(10px, 2vh, 20px);
+    border-top: 2px solid rgba(255, 255, 255, .25);
+    user-select: text;
+    -webkit-user-select: text;
+  }
+  /* two languages need more room: smaller, wider English text */
+  #mQ.bi #mText { font-size: clamp(18px, min(3vw, 3.6vh), 40px); max-width: 34ch; }
+  #mQ.bi #mTextEt { font-size: clamp(15px, min(2.2vw, 2.8vh), 28px); max-width: 44ch; }
   #mAnswer { font-size: clamp(20px, min(3.4vw, 5vh), 46px); color: var(--gold); font-weight: bold; }
   .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
   .btn {
@@ -257,6 +272,11 @@
     #modal { gap: 10px; padding-top: max(12px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); }
     #mText { max-width: 44ch; font-size: 17px; text-shadow: 2px 2px 0 #000; }
     #mAnswer { font-size: 18px; }
+    /* both languages side by side, so neither pushes the buttons off screen */
+    #mQ.bi { flex-direction: row; align-items: flex-start; text-align: left; gap: 14px; }
+    #mQ.bi > * { flex: 1; max-width: none; }
+    #mQ.bi #mText { font-size: 15px; }
+    #mQ.bi #mTextEt { font-size: 14px; max-width: none; border-top: none; padding-top: 0; border-left: 2px solid rgba(255, 255, 255, .25); padding-left: 14px; }
     .btn { min-height: 40px; padding: 8px 18px; }
     .row { margin-top: 8px !important; }
   }
@@ -276,7 +296,10 @@
 
 <div id="modal" class="panel" role="dialog" aria-modal="true" aria-labelledby="mText">
   <div id="mCat"></div>
-  <div id="mText"></div>
+  <div id="mQ">
+    <div id="mText"></div>
+    <div id="mTextEt" lang="et"></div>
+  </div>
   <div id="mMedia"></div>
   <div id="mAnswer"></div>
   <div id="mStage"></div>
@@ -320,6 +343,14 @@ const CATEGORIES = [
       ["Which Indonesian volcano erupted in 1815 and caused the 'year without a summer', the cold summer in which Mary Shelley began writing Frankenstein?", "Mount Tambora"],
       ["Since 2019, the kilogram is no longer defined by a metal cylinder kept near Paris. Which physical constant is it defined by now?", "The Planck constant"],
       ["Which Prussian explorer and naturalist, born in 1769, has more places, plants and animals named after him than anyone else?", "Alexander von Humboldt"]
+    ],
+    et: [
+      "Järved külmuvad pealt alla, sest selle aine tahke vorm hõljub oma vedela vormi peal. Mis aine see on?",
+      "Milline on ainus tähestiku täht, mida ei leidu ühegi USA osariigi nimes?",
+      "1582. aastal võeti uue kalendri kasutuselevõtul oktoobrist välja kümme päeva. Suurbritannia läks üle alles 1752. aastal ja pidi vahele jätma üksteist päeva. Mis selle kalendri nimi on?",
+      "Milline Indoneesia vulkaan purskas 1815. aastal ja põhjustas „suveta aasta“, külma suve, mil Mary Shelley hakkas kirjutama „Frankensteini“?",
+      "Alates 2019. aastast ei määratleta kilogrammi enam Pariisi lähedal hoitava metallsilindri abil. Millise füüsikalise konstandi abil see nüüd määratletakse?",
+      "Kelle nime kannab rohkem paiku, taimi ja loomi kui kellegi teise nime? Ta on 1769. aastal sündinud preisi maadeuurija ja loodusteadlane."
     ]
   },
   {
@@ -331,6 +362,14 @@ const CATEGORIES = [
       ["Which 1941 film lost Best Picture to 'How Green Was My Valley' and was attacked by the newspaper owner it made fun of?", "Citizen Kane"],
       ["Which 2020 Christopher Nolan film is named after a word in the Sator Square, an old Latin word puzzle found scratched into a wall at Pompeii?", "Tenet"],
       ["Which 1927 silent film about American fighter pilots in the First World War won the top prize at the very first Academy Awards?", "Wings"]
+    ],
+    et: [
+      "Millises filmis läks mehaaniline hai nii tihti katki, et režissöör pidi seda enamiku filmi vältel peitma?",
+      "Milline filmirežissöör ilmus korraks enamikus oma filmides ja tõstis hiljem need kaadrid filmi algusesse, et vaatajad teda enam ei otsiks?",
+      "Milline 1927. aasta saksa tummfilm, mis on kuulus oma naisroboti poolest, oli nii kallis, et viis oma stuudio peaaegu pankrotti?",
+      "Milline 1941. aasta film kaotas parima filmi auhinna filmile „How Green Was My Valley“ ning seda ründas ajalehe omanik, keda film pilkas?",
+      "Milline 2020. aasta Christopher Nolani film on nime saanud ühe sõna järgi Sator-ruudus, vanas ladinakeelses sõnamõistatuses, mis leiti Pompeiis seinale kraabituna?",
+      "Milline 1927. aasta tummfilm Ameerika hävituslendurite kohta Esimeses maailmasõjas võitis esimesel Oscarite jagamisel peaauhinna?"
     ]
   },
   {
@@ -342,6 +381,14 @@ const CATEGORIES = [
       ["In 1908 a Japanese scientist discovered umami, the fifth basic taste, by studying a broth made from which seaweed?", "Kombu"],
       ["Which spice from south-west China makes your lips buzz and go numb? It is actually the dried husk of a berry from the citrus family.", "Sichuan pepper"],
       ["Which 19th-century French chef organised professional kitchens into the 'brigade' system and defined the five mother sauces?", "Auguste Escoffier"]
+    ],
+    et: [
+      "Mis nime kannab keemiline reaktsioon suhkrute ja aminohapete vahel, mis pruunistab steiki ja annab leivale koore? See on nimetatud ühe prantsuse teadlase järgi.",
+      "Milline vürts on maailmas kaalu järgi kõige kallim? Ühe kilogrammi tegemiseks on vaja umbes 150 000 õit.",
+      "Milline soolatud sealiha kuulub päris carbonara sisse? Selle nimi tuleb itaalia sõnast, mis tähendab „põske“.",
+      "1908. aastal avastas üks Jaapani teadlane umami, viienda põhimaitse, uurides puljongit, mis oli tehtud millisest merevetikast?",
+      "Milline Edela-Hiinast pärit vürts paneb huuled kihelema ja tuimaks minema? See on tegelikult tsitrusviljade sugulastaime marja kuivatatud kest.",
+      "Milline 19. sajandi prantsuse kokk korraldas professionaalsed köögid „brigaadisüsteemi“ järgi ja määratles viis põhikastet?"
     ]
   },
   {
@@ -353,6 +400,14 @@ const CATEGORIES = [
       ["Which video site was first planned as a dating site called 'Tune In Hook Up'?", "YouTube"],
       ["What was Snapchat called when it first launched, before it was renamed in 2011?", "Picaboo"],
       ["Each autumn, new students joined Usenet without knowing its rules. In 1993 AOL let all its users in, and the wave never stopped. What did Usenet users call this?", "Eternal September"]
+    ],
+    et: [
+      "Milline ByteDance'ile kuuluv lühivideorakendus ühines 2018. aastal huulte sünkroonimise rakendusega Musical.ly?",
+      "2007. aastal pakkus kasutaja nimega Chris Messina sotsiaalmeedias vestluste rühmitamiseks välja millise funktsiooni? Ta ei töötanud selle ettevõtte heaks.",
+      "Milline teenus alustas podcastide ettevõttena nimega Odeo ja muutis suunda pärast seda, kui iTunes lisas podcastid?",
+      "Milline videoveebileht oli esialgu kavandatud tutvumisportaaliks nimega „Tune In Hook Up“?",
+      "Mis nime kandis Snapchat alguses, enne kui see 2011. aastal ümber nimetati?",
+      "Igal sügisel liitusid uued tudengid Usenetiga, teadmata selle reegleid. 1993. aastal lasi AOL sinna kõik oma kasutajad ja see laine ei lõppenud kunagi. Mis nime andsid Usenetti kasutajad sellele nähtusele?"
     ]
   },
   {
@@ -364,6 +419,14 @@ const CATEGORIES = [
       ["In 1993, CERN made which invention by Tim Berners-Lee free for anyone to use, without royalties?", "The World Wide Web"],
       ["What was the 1988 self-copying program that led to the first jury conviction under the US Computer Fraud and Abuse Act?", "The Morris Worm"],
       ["Which method, published in 1976, lets two strangers agree on a secret key even when anyone can read their messages?", "Diffie-Hellman key exchange"]
+    ],
+    et: [
+      "Mis oli 1969. aasta USA sõjaväe uurimisvõrk, millest kasvas välja internet? See ühendas esialgu neli kohta Californias ja Utahs.",
+      "1971. aastal valis Ray Tomlinson e-posti aadressides kasutamiseks millise klaviatuurimärgi, sest see ei esinenud kellegi nimes?",
+      "1. jaanuaril 1983 läks varane internet üle millisele protokollide komplektile? Seetõttu nimetatakse seda kuupäeva vahel interneti sünnipäevaks.",
+      "1993. aastal tegi CERN millise Tim Berners-Lee'i leiutise kõigile tasuta kasutatavaks, ilma autoritasudeta?",
+      "Mis oli 1988. aasta iseennast kopeeriv programm, mille tõttu mõisteti vandekohtu otsusega esimest korda süüdi USA arvutipettuse ja -kuritarvitamise seaduse alusel?",
+      "Milline 1976. aastal avaldatud meetod võimaldab kahel võõral kokku leppida salajase võtme osas ka siis, kui igaüks saab nende sõnumeid lugeda?"
     ]
   },
   {
@@ -375,6 +438,14 @@ const CATEGORIES = [
       ["Which leader of the Haitian Revolution was tricked into a meeting in 1802, sent to France, and left to die in a prison in the Jura mountains?", "Toussaint Louverture"],
       ["Which Chinese admiral of the Ming dynasty led seven voyages with huge 'treasure ships' between 1405 and 1433, reaching as far as East Africa?", "Zheng He"],
       ["Bolivia lost its coast to Chile in which war, fought from 1879 to 1884 mostly over nitrate deposits in the Atacama Desert?", "War of the Pacific"]
+    ],
+    et: [
+      "Milline maadeuurija hukkus 1521. aastal lahingus Filipiinidel, jättes esimese reisi ümber maailma lõpetada Juan Sebastián Elcano'le?",
+      "Mansa Musa valitses millist Lääne-Aafrika riiki? Oma 1324. aasta Mekka-reisil jagas ta nii palju kulda laiali, et selle väärtus Kairos langes.",
+      "Mis oli Hannibali suur võit Rooma üle 216. aastal eKr, mida õpitakse tänapäevalgi kui klassikalist näidet vaenlase armee ümberpiiramisest mõlemalt küljelt?",
+      "Milline Haiti revolutsiooni juht meelitati 1802. aastal kohtumisele lõksu, saadeti Prantsusmaale ja jäeti Jura mägedes asuvas vanglas surema?",
+      "Milline Mingi dünastia Hiina admiral juhtis aastatel 1405–1433 seitse retke suurte „aardelaevadega“, jõudes kuni Ida-Aafrikani?",
+      "Boliivia kaotas Tšiilile oma mereranniku millises sõjas, mida peeti aastatel 1879–1884 peamiselt Atacama kõrbe salpeetrimaardlate pärast?"
     ]
   },
   {
@@ -386,6 +457,14 @@ const CATEGORIES = [
       ["Germany got which narrow piece of land in 1890 so it could reach the Zambezi River and sail east? Victoria Falls was in the way.", "Caprivi Strip"],
       ["Only two countries are 'doubly landlocked', meaning all their neighbours are landlocked too. One is Liechtenstein. Which is the other, in Central Asia?", "Uzbekistan"],
       ["Which river in Venezuela splits off from the upper Orinoco and flows into the Rio Negro, naturally linking two huge river systems?", "Casiquiare"]
+    ],
+    et: [
+      "Millise riigiga on Lesotho täielikult ümbritsetud?",
+      "Belgia linn Baarle-Hertog koosneb enam kui 20 väikesest maalapist, mis asuvad millise teise riigi sees?",
+      "Milline Venemaa ala Poola ja Leedu vahel kandis kunagi nime Königsberg ning oli filosoof Kanti kodulinn?",
+      "Millise kitsa maariba sai Saksamaa 1890. aastal, et jõuda Sambesi jõeni ja sõita sealt itta? Teed takistas aga Victoria juga.",
+      "Ainult kaks riiki on „kahekordselt merepiirita“, see tähendab, et kõik nende naabrid on samuti merepiirita. Üks neist on Liechtenstein. Milline on teine, mis asub Kesk-Aasias?",
+      "Milline Venezuela jõgi hargneb Orinoco ülemjooksust ja suubub Rio Negrosse, ühendades loomulikul teel kaks tohutut jõesüsteemi?"
     ]
   },
   {
@@ -397,6 +476,14 @@ const CATEGORIES = [
       ["Which industrial process turns nitrogen from the air into ammonia for fertiliser? One of its inventors also led Germany's poison gas attacks in the First World War.", "Haber-Bosch process"],
       ["In 1886, Clemens Winkler discovered which element, confirming the 'eka-silicon' that Mendeleev had predicted?", "Germanium"],
       ["Four chemical elements are named after one small Swedish village, whose quarry produced the black mineral later called gadolinite. What is the village called?", "Ytterby"]
+    ],
+    et: [
+      "Millise metalli keemiline tähis on W ja millel on kõigist metallidest kõrgeim sulamistemperatuur?",
+      "Kes võttis 1796. aastal lüpsjanna Sarah Nelmesi käest lehmarõugeid, et kaitsta 8-aastast James Phippsi rõugete eest?",
+      "Mis oli Rosalind Franklini laboris tehtud DNA röntgenpilt, mida näidati James Watsonile Franklini teadmata? Selle nimes on number.",
+      "Milline tööstusprotsess muudab õhust pärit lämmastiku väetise jaoks ammoniaagiks? Üks selle leiutajatest juhtis ka Saksamaa mürkgaasirünnakuid Esimeses maailmasõjas.",
+      "1886. aastal avastas Clemens Winkler millise elemendi, mis kinnitas Mendelejevi ennustatud „eka-räni“ olemasolu?",
+      "Neli keemilist elementi on nime saanud ühe väikese Rootsi küla järgi, kus kivimurrust saadi musta mineraali, mida hiljem hakati kutsuma gadoliniidiks. Mis on selle küla nimi?"
     ]
   },
   {
@@ -408,6 +495,14 @@ const CATEGORIES = [
       ["Which NASA probe was lost in 1999 because one team used imperial units and the other used metric units?", "Mars Climate Orbiter"],
       ["Who made the first spacewalk in 1965, and had to let air out of his swollen spacesuit to fit back through the door?", "Alexei Leonov"],
       ["Which French mathematician worked out where Neptune should be from the odd movement of Uranus? Berlin astronomers found it in 1846, within 1 degree of his prediction.", "Urbain Le Verrier"]
+    ],
+    et: [
+      "Mis nime kandis Moskva tänavakoer, kellest sai 1957. aastal Sputnik 2 pardal esimene Maa orbiidil käinud loom?",
+      "2005. aastal maandus sond Huygens millisele Saturni kuule, millel on paks lämmastikuline atmosfäär?",
+      "Kes veenis NASA-t 1990. aastal Voyager 1 ümber pöörama, et teha Maast foto „Pale Blue Dot“?",
+      "Milline NASA sond läks 1999. aastal kaotsi, sest üks meeskond kasutas inglise ühikuid ja teine meetermõõdustikku?",
+      "Kes tegi 1965. aastal esimese kosmosekõnni ja pidi oma paistes skafandrist õhku välja laskma, et uksest tagasi mahtuda?",
+      "Milline prantsuse matemaatik arvutas Uraani kummalise liikumise järgi välja, kus Neptun peaks asuma? Berliini astronoomid leidsid selle 1846. aastal, vähem kui 1 kraadi kaugusel tema ennustusest."
     ]
   },
   {
@@ -419,6 +514,14 @@ const CATEGORIES = [
       ["What is the name of Odin's eight-legged horse, which was born to Loki?", "Sleipnir"],
       ["Which Japanese sun goddess hid in a cave and left the world in darkness until the other gods tricked her into coming out?", "Amaterasu"],
       ["Which Maya book tells how the Hero Twins beat the lords of the underworld, Xibalba, in a ball game?", "Popol Vuh"]
+    ],
+    et: [
+      "Milline Kreeka kangelane leidis Ariadne lõnga abil tee labürindist välja?",
+      "Milline šaakalipeaga Egiptuse jumal kaalus surnud inimese südant Maati sulega?",
+      "Milline hindu jumal kirjutas üles „Mahabharata“, samal ajal kui tark Vjaasa seda dikteeris, murdes ühe oma kihvadest, et seda sulena kasutada?",
+      "Mis on Odini kaheksajalgse hobuse nimi, kelle tõi ilmale Loki?",
+      "Milline Jaapani päikesejumalanna peitis end koopasse ja jättis maailma pimedusse, kuni teised jumalad meelitasid ta trikiga välja?",
+      "Milline maiade raamat jutustab, kuidas Kangelaskaksikud alistasid allilma isandad, Xibalba, pallimängus?"
     ]
   },
   {
@@ -430,6 +533,14 @@ const CATEGORIES = [
       ["Franz Kafka asked which friend to burn his unpublished writing? The friend refused and published The Trial instead.", "Max Brod"],
       ["Who was Lord Byron's personal doctor in 1816, and wrote 'The Vampyre', a story first published under Byron's name?", "John Polidori"],
       ["In 1922, Hemingway's wife Hadley lost a suitcase holding almost all of his early writing. At which Paris train station did it disappear?", "Gare de Lyon"]
+    ],
+    et: [
+      "Milline kirjanik kirjutas oma viimase romaani, 1949. aasta loo tulevikudiktatuurist, Šotimaa Jura saare taluhoones, olles tuberkuloosihaige?",
+      "Milline 1937. aasta John Steinbecki novell on saanud pealkirja Robert Burnsi luuletuse järgi, mis räägib talupoegast, kes hävitab väikese looma pesa?",
+      "Milline vene kirjanik seisis 1849. aastal Peterburis hukkamisrühma ees, kuid tsaari käsk päästis ta viimasel hetkel?",
+      "Franz Kafka palus millisel sõbral oma avaldamata kirjutised ära põletada? Sõber keeldus ja avaldas hoopis „Protsessi“.",
+      "Kes oli Lord Byroni isiklik arst 1816. aastal ja kirjutas loo „The Vampyre“, mis ilmus esmalt Byroni nime all?",
+      "1922. aastal kaotas Hemingway naine Hadley kohvri, milles oli peaaegu kogu tema varane looming. Millises Pariisi raudteejaamas see kadus?"
     ]
   },
   {
@@ -441,6 +552,14 @@ const CATEGORIES = [
       ["Maria Altmann took which country to the US Supreme Court to win back Klimt's 'Portrait of Adele Bloch-Bauer I', stolen by the Nazis?", "Austria"],
       ["Rembrandt's 'The Night Watch' actually shows a daytime scene. What turned dark over time and gave it its nickname?", "Varnish"],
       ["The Mauritshuis museum says 'Girl with a Pearl Earring' is not a portrait. What Dutch word names this kind of painting, a study of a face showing a type or character?", "Tronie"]
+    ],
+    et: [
+      "Millist popkunstnikku tulistas 1968. aastal Valerie Solanas nii, et ta jäi vaevu ellu?",
+      "Frida Kahlo abiellus kaks korda, 1929. ja 1940. aastal, millise suuri seinamaale maalinud mehhiko kunstnikuga?",
+      "2018. aastal lõikus Banksy teos „Girl with Balloon“ end ise ribadeks kohe pärast müümist Sotheby’s oksjonil. Mis on selle teose uus pealkiri?",
+      "Maria Altmann viis millise riigi USA ülemkohtusse, et saada tagasi Klimti maal „Adele Bloch-Baueri portree I“, mille natsid olid varastanud?",
+      "Rembrandti „Öine vahtkond“ kujutab tegelikult päevast stseeni. Mis läks aja jooksul tumedaks ja andis maalile selle hüüdnime?",
+      "Mauritshuisi muuseumi sõnul ei ole „Tüdruk pärlkõrvarõngaga“ portree. Mis hollandikeelne sõna nimetab seda liiki maali, mis on näo uurimus ja näitab teatud tüüpi inimest või iseloomu?"
     ]
   },
   {
@@ -452,6 +571,14 @@ const CATEGORIES = [
       ["In which city was Handel's Messiah first performed in 1742? It was not London.", "Dublin"],
       ["Stravinsky's 'The Rite of Spring' almost caused a riot at its first performance in Paris in 1913. Which dance company performed it, with choreography by Nijinsky?", "Ballets Russes"],
       ["The 'Amen break' is a drum solo of about six seconds used in countless jungle and drum and bass tracks. Which soul group recorded it on a 1969 B-side?", "The Winstons"]
+    ],
+    et: [
+      "Milline laulja sündis 1946. aastal Sansibaris nime all Farrokh Bulsara, valis hiljem uue perekonnanime ja juhtis Briti bändi?",
+      "Milline pill, mille patenteeris 1846. aastal üks Belgia pillimeister, on tehtud messingist, kuid loetakse puupuhkpilliks?",
+      "Milline Briti rokkbänd, kes on tuntud oma flöödimängija poolest, on saanud nime 18. sajandi Inglise talumehe järgi, kes täiustas külvimasinat?",
+      "Millises linnas esitati Händeli „Messiat“ esimest korda 1742. aastal? See ei olnud London.",
+      "Stravinski „Kevadpühitsus“ tekitas 1913. aastal Pariisis esietendusel peaaegu rahutused. Milline tantsutrupp seda esitas, Nijinski seatud tantsuga?",
+      "„Amen break“ on umbes kuuesekundiline trummisoolo, mida kasutatakse lugematutes jungle’i ja drum and bassi lugudes. Milline soulbänd lindistas selle 1969. aastal singli B-poolele?"
     ]
   },
   {
@@ -463,6 +590,14 @@ const CATEGORIES = [
       ["Which two-letter word began as a joke in a Boston newspaper in 1839, short for a deliberate misspelling of 'all correct'?", "OK"],
       ["Which word for a black outline picture of someone comes from the name of a French finance minister of 1759 who was mocked for cutting costs?", "Silhouette"],
       ["In the Bible's Book of Judges, people from which tribe were killed because they could not say the word 'shibboleth' correctly?", "Ephraimites"]
+    ],
+    et: [
+      "Inglise keeles pärineb soovimatu e-kirja nimetus Monty Pythoni sketšist. Millist konservliha pakub kohvik selles sketšis kõige juurde?",
+      "1880. aastal keeldusid Mayo krahvkonna rentnikud tegemast inglise maahalduriga mingit koostööd. Tema perekonnanimest sai milline inglise keele verb?",
+      "Sõna „robot“ pärineb 1920. aasta näidendist „R.U.R.“. Milline tšehhi kirjanik selle kirjutas?",
+      "Milline kahetäheline inglise sõna sai alguse naljana ühes Bostoni ajalehes 1839. aastal? See oli lühend tahtlikult valesti kirjutatud väljendist „all correct“.",
+      "Milline inglise sõna musta piirjoonega inimese pildi kohta pärineb 1759. aasta Prantsuse rahandusministri nimest, keda pilgati kulude kärpimise pärast?",
+      "Piibli Kohtumõistjate raamatus tapeti millise suguharu inimesed, sest nad ei osanud sõna „shibboleth“ õigesti öelda?"
     ]
   },
   {
@@ -474,6 +609,14 @@ const CATEGORIES = [
       ["Which Danish architect left the Sydney Opera House project in 1966 and never came back to see it finished?", "Jorn Utzon"],
       ["Brunelleschi's 15th-century dome was built without a wooden frame to support it during construction. What is the official name of the cathedral it sits on?", "Santa Maria del Fiore"],
       ["Who designed Chicago's Home Insurance Building of 1885, often called the first skyscraper? Louis Sullivan trained under him.", "William Le Baron Jenney"]
+    ],
+    et: [
+      "Milline arhitekt jäi 1926. aastal Barcelonas trammi alla ja on maetud krüpti basiilikas, mida ta kunagi valmis ei saanud?",
+      "Milline prantsuse insener projekteeris raudkarkassi Vabadusepatsa sees, mis seda püsti hoiab?",
+      "Milline hiina päritolu ameerika arhitekt projekteeris Louvre’i klaaspüramiidi, mis avati 1989. aastal?",
+      "Milline taani arhitekt lahkus 1966. aastal Sydney ooperimaja projektist ega tulnud kunagi seda valminuna vaatama?",
+      "Brunelleschi 15. sajandi kuppel ehitati ilma puitkarkassita, mis oleks seda ehitamise ajal toetanud. Mis on selle katedraali ametlik nimi, mille peal kuppel asub?",
+      "Kes projekteeris Chicago Home Insurance Buildingu 1885. aastal, mida sageli nimetatakse esimeseks pilvelõhkujaks? Louis Sullivan õppis tema juures."
     ]
   },
   {
@@ -485,6 +628,14 @@ const CATEGORIES = [
       ["What was Amazon's original name, which Jeff Bezos dropped after a lawyer misheard it as 'cadaver'?", "Cadabra"],
       ["In 2022, Nvidia's $40 billion offer for which British chip designer failed because of pressure from regulators?", "Arm"],
       ["When Bill Gates and Paul Allen started their company in 1975, its name included which punctuation mark, removed about a year later?", "Hyphen"]
+    ],
+    et: [
+      "1976. aastal müüs kaasasutaja Ronald Wayne oma 10% osaluse millises ettevõttes 800 dollari eest?",
+      "2000. aastal oli millisel videolaenutusketil võimalus osta Netflix umbes 50 miljoni dollari eest, kuid ta ütles ära?",
+      "2008. aastal pakkus Microsoft 44,6 miljardit dollarit millise veebiportaali eest, mis ütles ära?",
+      "Mis oli Amazoni algne nimi, millest Jeff Bezos loobus pärast seda, kui üks advokaat kuulis seda valesti ja arvas, et see on „cadaver“?",
+      "2022. aastal luhtus Nvidia 40 miljardi dollari pakkumine millise Briti kiibidisaini ettevõtte vastu, sest reguleerijad avaldasid survet. Milline ettevõte see oli?",
+      "Kui Bill Gates ja Paul Allen 1975. aastal oma ettevõtte asutasid, oli selle nimes üks kirjavahemärk, mis eemaldati umbes aasta hiljem. Milline kirjavahemärk?"
     ]
   },
   {
@@ -496,6 +647,14 @@ const CATEGORIES = [
       ["Which Soviet computer scientist created Tetris in 1984 but got no royalties from it until 1996?", "Alexey Pajitnov"],
       ["Kazuhisa Hashimoto added the Konami Code to make testing easier on which 1986 NES version of a shoot-'em-up?", "Gradius"],
       ["In 2014, diggers found buried Atari 'E.T.' cartridges in a landfill in which New Mexico city?", "Alamogordo"]
+    ],
+    et: [
+      "Milline 1980. aasta mänguautomaadi tegelane oli looja sõnul inspireeritud pitsast, millest üks tükk on puudu?",
+      "1981. aasta mänguautomaadi mängus „Donkey Kong“ oli puusepal, keda me nüüd tunneme Mariona, teine nimi. Mis see oli?",
+      "Nintendo asutati Kyotos 1889. aastal. Mida see alguses tootis?",
+      "Milline nõukogude arvutiteadlane lõi 1984. aastal Tetrise, kuid ei saanud selle eest autoritasu enne 1996. aastat?",
+      "Kazuhisa Hashimoto lisas Konami koodi, et testimine oleks lihtsam. Millise tulistamismängu 1986. aasta NES-i versioonis?",
+      "2014. aastal leidsid ekskavaatorid prügilast maetud Atari „E.T.“ mängukassette. Millises New Mexico osariigi linnas?"
     ]
   },
   {
@@ -507,6 +666,14 @@ const CATEGORIES = [
       ["Which TV producer created Wheel of Fortune, and wrote a famous 30-second quiz-show countdown tune as a lullaby for his son?", "Merv Griffin"],
       ["George R.R. Martin based the Red Wedding partly on the Black Dinner of 1440 and partly on which 1692 massacre of the MacDonalds?", "Glencoe"],
       ["In Doctor Who, the TARDIS is stuck looking like a police box. Which broken part is supposed to disguise it wherever it lands?", "Chameleon circuit"]
+    ],
+    et: [
+      "Mis nime all töötab väikeste asjadega tegelev advokaat Jimmy McGill?",
+      "„Sopranode“ lõpus läheb pilt ootamatult mustaks ühes einelas. Millise bändi laul seal mängib?",
+      "Ricky Gervais lõi Briti „The Office’i“ algse versiooni koos millise mehega?",
+      "Milline telesaadete produtsent lõi „Wheel of Fortune’i“ ja kirjutas kuulsa 30-sekundilise viktoriinisaate meloodia hällilauluna oma pojale?",
+      "George R. R. Martin võttis „Punase pulma“ eeskujuks osaliselt 1440. aasta „Musta õhtusöögi“ ja osaliselt millise 1692. aasta MacDonaldide veresauna?",
+      "Sarjas „Doctor Who“ on TARDIS kinni jäänud politseikabiini kujule. Milline katkine osa peaks seda kõikjal maandudes maskeerima?"
     ]
   },
   {
@@ -518,6 +685,14 @@ const CATEGORIES = [
       ["The first ever Formula One World Championship race was held in 1950 at which British circuit?", "Silverstone"],
       ["The race's official history says the Tour de France leader wears yellow because the newspaper that started the race was printed on yellow paper. Which newspaper?", "L'Auto"],
       ["In the chaotic 1904 Olympic marathon, the winner Thomas Hicks was given brandy, egg whites and which poison?", "Strychnine"]
+    ],
+    et: [
+      "Kriketi Ashes’i sarja mängivad Inglismaa ja milline riik?",
+      "1954. aastal jooksis Roger Bannister Iffley Roadi staadionil esimese miili alla nelja minuti. Millises linnas see staadion asub?",
+      "Milline riik võitis aastatel 1928–1956 meeste maahokis kuus olümpiakuldmedalit järjest?",
+      "Millisel Briti ringrajal peeti 1950. aastal esimene Vormel 1 maailmameistrivõistluste sõit?",
+      "Tour de France’i ametliku ajaloo järgi kannab liider kollast särki, sest võistluse algatanud ajaleht trükiti kollasele paberile. Milline ajaleht see oli?",
+      "Segases 1904. aasta olümpiamaratonis anti võitjale Thomas Hicksile brändit, munavalgeid ja veel üht mürki. Millist?"
     ]
   },
   {
@@ -529,6 +704,14 @@ const CATEGORIES = [
       ["Barbe-Nicole, who ran a Champagne house in the 19th century, invented the riddling table in 1816. Which Champagne house?", "Veuve Clicquot"],
       ["In the 1860s a tiny sap-sucking insect arrived in Europe and destroyed most of its vineyards, which then had to be grafted onto American roots. What is the insect called?", "Phylloxera"],
       ["At the 1976 'Judgment of Paris' blind tasting, the best white wine was a 1973 Chardonnay from which Napa winery?", "Chateau Montelena"]
+    ],
+    et: [
+      "1759. aastal sõlmis milline iiri õllevalmistaja 9000-aastase rendilepingu oma õllevabriku jaoks St James’s Gate’il?",
+      "Milline džinnist, Campari’st ja magusast vermutist tehtud kokteil on legendi järgi saanud nime Firenze krahvi järgi, kes soovis oma Americanot kangemana?",
+      "Millise tsitrusvilja õliga maitsestatakse Earl Greyi teed?",
+      "Barbe-Nicole, kes juhtis 19. sajandil šampanjamaja, leiutas 1816. aastal šampanjapudelite pööramislaua („riddling table“). Milline šampanjamaja see oli?",
+      "1860. aastatel jõudis Euroopasse väike taimemahla imev putukas ja hävitas enamiku viinamarjaistandusi. Seejärel tuli viinapuud Ameerika juurtele pookida. Mis selle putuka nimi on?",
+      "1976. aasta „Pariisi kohtuotsuse“ pimedegustatsioonil oli parim valge vein 1973. aasta Chardonnay. Milliselt Napa veinitootjalt see pärines?"
     ]
   },
   {
@@ -540,6 +723,14 @@ const CATEGORIES = [
       ["What is the name of New Zealand's heaviest parrot? It cannot fly, is active at night and has an owl-like face.", "Kakapo"],
       ["The mantis shrimp strikes so fast that the water tears apart into tiny vapour bubbles, which then collapse. What is this effect called?", "Cavitation"],
       ["The axolotl keeps its gills and young form even as an adult. What is the scientific term for this?", "Neoteny"]
+    ],
+    et: [
+      "Millisel loomal on kolm südant, sinine veri ja enamik närvirakke kombitsates?",
+      "Millisel kukkurloomal on sõrmejäljed, mis on inimese omadega nii sarnased, et neid on raske eristada isegi mikroskoobi all?",
+      "Milline urgusid kaevav kukkurloom on kuulus oma kuubikujulise väljaheite poolest?",
+      "Mis on Uus-Meremaa kõige raskema papagoi nimi? Ta ei oska lennata, on öise eluviisiga ja tal on öökullilaadne nägu.",
+      "Palvetajakrevett (mantis shrimp) lööb nii kiiresti, et vesi rebeneb väikesteks aurumullideks, mis seejärel kokku kukuvad. Mis selle nähtuse nimi on?",
+      "Aksolotl säilitab ka täiskasvanuna oma lõpused ja noorusaegse kuju. Mis on selle nähtuse teaduslik nimetus?"
     ]
   },
   {
@@ -551,6 +742,14 @@ const CATEGORIES = [
       ["The hyoid is the only bone that does not touch any other bone. Which organ does it hold in place?", "The tongue"],
       ["In 1848 an iron rod went through Phineas Gage's skull, and his personality changed. Which part of the brain did this teach doctors about?", "Frontal lobe"],
       ["Henrietta Lacks' cells, taken without her consent in 1951, became the first 'immortal' human cell line. What is it called?", "HeLa"]
+    ],
+    et: [
+      "Jalus on inimkeha väikseim luu. Millises organis see asub?",
+      "Milline organ võib kasvada tagasi täissuuruseni, kui kirurgid on enamiku sellest eemaldanud?",
+      "Milline keemiline element moodustab inimkeha massist kõige suurema osa, edestades süsinikku?",
+      "Hüoidluu on ainus luu, mis ei puutu kokku ühegi teise luuga. Millist organit see paigal hoiab?",
+      "1848. aastal läbis raudvarras Phineas Gage'i koljut ja tema iseloom muutus. Millise ajuosa kohta saadi sellest uusi teadmisi?",
+      "Henrietta Lacksi rakud, mis võeti 1951. aastal tema nõusolekuta, said esimeseks „surematuks“ inimese rakuliiniks. Mis selle nimi on?"
     ]
   },
   {
@@ -562,6 +761,14 @@ const CATEGORIES = [
       ["One of the first webcams, in a Cambridge University computer lab, was pointed at what, so that staff would not walk over for nothing?", "A coffee pot"],
       ["Film star Hedy Lamarr co-patented which technique in 1942, to stop the radio signals guiding Allied torpedoes from being jammed?", "Frequency hopping"],
       ["Which corroded bronze device full of gears, found in a Greek shipwreck in 1901, could predict eclipses more than 2,000 years ago?", "Antikythera mechanism"]
+    ],
+    et: [
+      "Percy Spencer märkas radari magnetroni kõrval töötades, et tema taskus sulab šokolaadibatoon. Millise koduse seadme jaoks ta seejärel patendi võttis?",
+      "Milline Ungari ajakirjanik patenteeris 1938. aastal tänapäevase pastapliiatsi? Suurbritannias kutsutakse pastapliiatsit tänaseni tema perekonnanime järgi.",
+      "Mullikile leiutasid 1957. aastal kaks inseneri, kes tegelikult püüdsid valmistada hoopis mida?",
+      "Üks esimesi veebikaameraid asus Cambridge'i ülikooli arvutilaboris. Mille poole see oli suunatud, et töötajad ei peaks asjata kohale kõndima?",
+      "Filmitäht Hedy Lamarr võttis 1942. aastal kaasautorina patendi millisele tehnikale, et liitlaste torpeedosid juhtivaid raadiosignaale ei saaks segada?",
+      "Milline Kreeka laevavrakist 1901. aastal leitud korrodeerunud hammasratastega pronksseade suutis ennustada päikese- ja kuuvarjutusi rohkem kui 2000 aastat tagasi?"
     ]
   },
   {
@@ -573,6 +780,14 @@ const CATEGORIES = [
       ["In 1990, thieves stole 13 artworks, including a Vermeer, from which Boston museum? The case is still unsolved, and the empty frames still hang there.", "Isabella Stewart Gardner Museum"],
       ["In 2003, thieves emptied most of the vault of the Diamond Centre in which Belgian city, taking gems worth over $100 million?", "Antwerp"],
       ["The first murder solved using fingerprints was in 1892, in a country where Juan Vucetich had just set up a fingerprint office. Which country?", "Argentina"]
+    ],
+    et: [
+      "Frank Abagnale'i väidetav elu petturina, kes esines piloodi ja arstina, sai aluseks millisele 2002. aasta Spielbergi filmile?",
+      "Aastaid ei õnnestunud Al Caponele midagi muud süüdistuseks esitada. Mille eest mõisteti ta 1931. aastal lõpuks süüdi?",
+      "1971. aastal hüppas kaaper Boeing 727 lennuki tagatrepilt langevarjuga alla, kaasas 200 000 dollarit, ning teda ei tuvastatud kunagi. Millise nime all teda tuntakse?",
+      "1990. aastal varastasid vargad 13 kunstiteost, sealhulgas ühe Vermeeri, ühest Bostoni muuseumist. Millisest muuseumist? Juhtum on siiani lahendamata ja tühjad raamid ripuvad seal alles.",
+      "2003. aastal tühjendasid vargad Diamond Centre'i varakambri enamiku sisust, viies kaasa kalliskive üle 100 miljoni dollari väärtuses. Millises Belgia linnas see juhtus?",
+      "Esimene sõrmejälgede abil lahendatud mõrv oli 1892. aastal riigis, kus Juan Vucetich oli just asutanud sõrmejälgede büroo. Milline riik see oli?"
     ]
   },
   {
@@ -584,6 +799,14 @@ const CATEGORIES = [
       ["Ada Lovelace's 1843 notes included an algorithm for Bernoulli numbers, written for which machine that Charles Babbage designed but never built?", "The Analytical Engine"],
       ["Edsger Dijkstra wrote a famous 1968 letter titled '___ Statement Considered Harmful'. Which statement?", "Go To"],
       ["Which feature, added to the ALGOL W language in 1965, did Tony Hoare later call his 'billion-dollar mistake'?", "The null reference"]
+    ],
+    et: [
+      "Brendan Eich kirjutas 1995. aastal umbes kümne päevaga esimese versiooni millisest veebi programmeerimiskeelest?",
+      "1947. aastal kleepis Grace Hopperi meeskond Harvard Mark II logiraamatusse teibiga ööliblika kui „esimese tegeliku juhtumi“ millest?",
+      "Kes kirjutas 2005. aastal Giti, pärast seda kui Linuxi tuum jäi ilma oma tasuta versioonihaldusvahendist?",
+      "Ada Lovelace'i 1843. aasta märkmed sisaldasid Bernoulli arvude algoritmi, mis oli kirjutatud millisele masinale, mille Charles Babbage kavandas, aga ei ehitanud kunagi valmis?",
+      "Edsger Dijkstra kirjutas 1968. aastal kuulsa kirja pealkirjaga „___ Statement Considered Harmful“ (inglise keeles). Milline käsk on pealkirjas tühja koha asemel?",
+      "Millist ALGOL W keelele 1965. aastal lisatud võimalust nimetas Tony Hoare hiljem oma „miljardi dollari veaks“ („billion-dollar mistake“)?"
     ]
   },
   {
@@ -595,6 +818,14 @@ const CATEGORIES = [
       ["Which startup accelerator, founded by Paul Graham and others in 2005, gave early funding to Airbnb, Dropbox and Reddit?", "Y Combinator"],
       ["Stewart Butterfield twice turned a failing online game into a success. The second time it became Slack. What was the first, a photo-sharing site?", "Flickr"],
       ["In 1999, the CEO of which web portal turned down the chance to buy Google for less than $1 million?", "Excite"]
+    ],
+    et: [
+      "Millise ettevõtte käivitasid Travis Kalanick ja Garrett Camp 2009. aastal San Franciscos musta auto teenusena („black car“)?",
+      "2008. aastal hoidsid Airbnb asutajad ettevõtet elus, müües valimisteemalisi karpe millega?",
+      "Drew Houston alustas Dropboxi pärast seda, kui ta unustas Bostonist New Yorki bussireisil maha mille?",
+      "Milline idufirmade kiirendi, mille asutasid 2005. aastal Paul Graham ja teised, andis varajast rahastust Airbnb-le, Dropboxile ja Redditile?",
+      "Stewart Butterfield muutis kaks korda läbikukkunud veebimängu edukaks ettevõtteks. Teisel korral sai sellest Slack. Mis oli esimene, fotode jagamise sait?",
+      "1999. aastal keeldus millise veebiportaali juht võimalusest osta Google'i alla 1 miljoni dollari eest?"
     ]
   },
   {
@@ -606,6 +837,14 @@ const CATEGORIES = [
       ["Jeff Hawkins carried a block of wood in his shirt pocket to test the size of which handheld organiser?", "PalmPilot"],
       ["Nokia was founded in 1865. What kind of business was it?", "A paper (pulp) mill"],
       ["Which inventor created the Segway, as well as a portable insulin pump and the FIRST robotics competition?", "Dean Kamen"]
+    ],
+    et: [
+      "Mis oli Sony 1979. aasta kaasaskantava kassettmakki nimi, mis pani aluse tervele uuele isikliku muusika kuulamise viisile?",
+      "Mis oli Sony 1975. aasta kodune videoformaat, mis kaotas videoformaatide sõja JVC VHS-ile?",
+      "Mis oli BlackBerry tootja ettevõtte nimi enne seda, kui ta nimetas end kuulsa telefoni järgi ümber?",
+      "Jeff Hawkins kandis särgitaskus puuklotsi, et katsetada, kui suur peaks olema tema pihuarvuti. Mis oli selle pihuarvuti nimi?",
+      "Nokia asutati 1865. aastal. Millega see ettevõte tegeles?",
+      "Milline leiutaja lõi Segway, aga ka kaasaskantava insuliinipumba ja FIRST robootikavõistluse?"
     ]
   },
   {
@@ -617,6 +856,14 @@ const CATEGORIES = [
       ["What name did Harper's Bazaar editor Carmel Snow give to Christian Dior's first collection in 1947?", "The New Look"],
       ["Hermès started in Paris in 1837 making what? That is why its logo shows a carriage.", "Horse harnesses"],
       ["The cardigan is named after the 7th Earl of Cardigan. Which disastrous 1854 cavalry attack in the Crimean War did he lead?", "Charge of the Light Brigade"]
+    ],
+    et: [
+      "1926. aastal võrdles Vogue Coco Chaneli versiooni millisest rõivaesemest Fordi Model T-ga?",
+      "Milline Baieris sündinud kaupmees võttis 1873. aastal koos rätsepa Jacob Davisega patendi vasknaastudega tööpükstele?",
+      "Crocsi kingad kujundati ja müüdi esimest korda 2002. aastal millise tegevuse jaoks?",
+      "Millise nime andis Harper's Bazaari toimetaja Carmel Snow Christian Diori esimesele kollektsioonile 1947. aastal?",
+      "Mille valmistamisega alustas Hermès 1837. aastal Pariisis? Sellepärast on tema logol kaarik.",
+      "Kardigan on nime saanud 7. Cardigani krahvi järgi. Millist 1854. aasta Krimmi sõja ratsaväerünnakut, mis lõppes katastroofiga, ta juhtis?"
     ]
   },
   {
@@ -628,6 +875,14 @@ const CATEGORIES = [
       ["The name Lego comes from the Danish words 'leg godt'. What do they mean?", "Play well"],
       ["Häagen-Dazs has a made-up name that sounds Danish. In which New York borough was it founded in 1960?", "The Bronx"],
       ["The stars in the Subaru logo show which star cluster? That is also what the Japanese word means.", "The Pleiades"]
+    ],
+    et: [
+      "Nike on nime saanud Kreeka jumalanna järgi. Mille jumalanna ta oli?",
+      "Millise Rootsi ettevõtte nimi tuleb asutaja initsiaalidest ning tema perekonna talu ja koduküla nimedest?",
+      "Starbucksi logol on milline Kreeka mütoloogia olend, kellel on kaks saba?",
+      "Nimi Lego tuleb Taani sõnadest „leg godt“. Mida need tähendavad?",
+      "Häagen-Dazsi nimi on väljamõeldud ja kõlab taanipäraselt. Millises New Yorgi linnaosas see ettevõte 1960. aastal asutati?",
+      "Subaru logol olevad tähed kujutavad millist täheparve? Seda tähendab ka jaapani sõna."
     ]
   },
   {
@@ -639,6 +894,14 @@ const CATEGORIES = [
       ["In which country did two journalists invent Trivial Pursuit in 1979?", "Canada"],
       ["The director of the Oscar-winning short film 'The Red Balloon' also invented which 1957 game about conquering the world?", "Risk"],
       ["In backgammon, which object, added in New York gambling clubs in the 1920s, is used to raise the stakes?", "The doubling cube"]
+    ],
+    et: [
+      "Milline on males ainus malend, mis võib teiste malendite üle hüpata?",
+      "Millised kaks tähte on ingliskeelses Scrabble'is kumbki 10 punkti väärt?",
+      "Lizzie Magie 1904. aasta „Landlord's Game“, mis pidi näitama maa kokkuahmimise kurjust, sai hiljem millisest lauamängust?",
+      "Millises riigis leiutasid kaks ajakirjanikku 1979. aastal mängu „Trivial Pursuit“?",
+      "Oscari võitnud lühifilmi „Punane õhupall“ („The Red Balloon“) režissöör leiutas ka 1957. aasta mängu maailma vallutamisest. Mis mäng see on?",
+      "Millist eset, mis lisati 1920. aastatel New Yorgi hasartmänguklubides, kasutatakse backgammonis panuste tõstmiseks?"
     ]
   }
 ];
@@ -833,6 +1096,10 @@ function renderModal() {
 
   $("mCat").textContent = category.name + " — " + value;
   $("mText").textContent = question;
+  const et = category.et && category.et[idx];
+  $("mTextEt").textContent = et || "";
+  $("mTextEt").classList.toggle("hidden", !et);
+  $("mQ").classList.toggle("bi", !!et);
 
   // Optional third element: a link to play the clip somewhere else.
   const mediaEl = $("mMedia");
