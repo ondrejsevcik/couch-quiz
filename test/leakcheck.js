@@ -2,7 +2,7 @@ const stop=new Set(['the','this','a','of','and','in','on','to','for','is','was',
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ');
 let issues=0;
 // Check the English question and its Estonian translation against the answer.
-const withEt=cat=>cat.clues.flatMap(([q,a],i)=>[[q,a]].concat(cat.et&&cat.et[i]?[[cat.et[i],a,true]]:[]));
+const withEt=cat=>cat.pool.flatMap(([,q,a,et])=>[[q,a],[et,a,true]]);
 for(const cat of CATEGORIES){
   for(const [q,a] of withEt(cat)){
     const qn=' '+norm(q)+' ';

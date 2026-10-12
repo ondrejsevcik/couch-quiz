@@ -4,12 +4,11 @@ const walk = n => [n, ...(n.children||[]).flatMap(walk)];
 const btn = t => walk(els.mStage).find(e=>e._t&&e._t.startsWith(t));
 
 // ---- content invariants ----
-ok(CATEGORIES.every(c=>c.clues.length===6), 'every category has exactly 6 clues');
-ok(CATEGORIES.every(c=>c.clues.every(q=>q.length>=2&&q.length<=3&&q[0]&&q[1])), 'every clue has question+answer (+optional media url)');
-ok(CATEGORIES.every(c=>c.clues.every(q=>q.length<3||/^https:\/\//.test(q[2]))), 'media urls are https');
-const etQs = CATEGORIES.map(c=>c.et);
-ok(etQs.every(e=>Array.isArray(e)&&e.length===6), 'every category has 6 Estonian questions');
-ok(etQs.every(e=>!e||e.every(q=>typeof q==='string'&&q.includes('?'))), 'Estonian lines are questions');
+const MIN_PER_LEVEL = 2;
+ok(CATEGORIES.every(c=>[1,2,3].every(l=>c.pool.filter(q=>q[0]===l).length>=MIN_PER_LEVEL)), 'every category has at least '+MIN_PER_LEVEL+' questions per level');
+ok(CATEGORIES.every(c=>c.pool.every(q=>q.length===4&&[1,2,3].includes(q[0])&&q.slice(1).every(s=>typeof s==='string'&&s.trim()))), 'every entry is [level, question, answer, Estonian]');
+ok(CATEGORIES.every(c=>c.pool.every(q=>q[1].includes('?')&&q[3].includes('?'))), 'English and Estonian lines are questions');
+ok(CATEGORIES.every(c=>new Set(c.pool.map(clueKey)).size===c.pool.length), 'question keys unique within each pool');
 ok(CATEGORIES.length>=BOARD_SIZE, 'pool has at least 6 categories');
 ok(new Set(CATEGORIES.map(c=>c.name)).size===CATEGORIES.length, 'category names unique');
 const longWords = CATEGORIES.flatMap(c=>c.name.match(/[A-Za-z]{9,}/g)||[]).filter(w=>!SOFT_HYPHENS[w]);
@@ -38,6 +37,8 @@ ok(view==='game' && state.board.length===6, 'game has 6 categories');
 ok(new Set(state.board.map(c=>c.name)).size===6, 'board categories unique');
 ok(state.scores.length===3, '3 scores');
 ok(first.every(n=>played.has(n)), 'started categories marked played');
+ok(state.board.every(c=>c.clues.map(q=>q[0]).join()==='1,1,2,2,3,3'), 'each column draws two questions per level, in row order');
+ok(state.board.every(c=>c.clues.every(q=>byName(c.name).pool.includes(q))), 'drawn questions come from their own pool');
 if (CATEGORIES.length >= 12) {
   const next = randomPick();
   ok(next.every(n=>!played.has(n)), 'random prefers unplayed categories');
@@ -46,7 +47,8 @@ if (CATEGORIES.length >= 12) {
 // ---- play ----
 openClue(0,2,300);
 ok(state.phase==='clue','phase clue after open');
-ok(els.mTextEt._t===state.board[0].et[2], 'Estonian question shown under the English one');
+ok(els.mTextEt._t===state.board[0].clues[2][3], 'Estonian question shown under the English one');
+ok(seen.has(clueKey(state.board[0].clues[2])), 'opened question marked seen');
 pickPlayer(1);
 ok(state.phase==='judge','phase judge after picking player');
 render();
@@ -76,6 +78,8 @@ ok(again('view')==='game', 'reload resumes game');
 ok(JSON.stringify(again('state.scores'))===JSON.stringify(state.scores), 'reload keeps scores');
 ok(again('state.used')['2-5']===true, 'reload keeps used tiles');
 ok(again('players').join()==='Ann,Bo,Cy', 'reload keeps player names');
+ok(JSON.stringify(again('state.board'))===JSON.stringify(state.board), 'reload keeps the drawn questions');
+ok(again('seen').size===seen.size, 'reload keeps seen questions');
 
 openClue(3,1,200); pickPlayer(2); render();
 const mid = boot(store);
@@ -86,6 +90,18 @@ ok(state.scores[2]===200, 'double tap on judge scores once');
 ok(boot({'couchquiz.v1': JSON.stringify({played: 5, players: [1, 2]})})('view')==='setup', 'corrupt storage falls back to setup');
 ok(boot({'couchquiz.v1': '{not json'})('players.length')===3, 'unparseable storage uses defaults');
 ok(boot({'couchquiz.v1': JSON.stringify({played: ['Denmark']})})('played.size')===0, 'unknown played categories dropped');
+const oldGame = JSON.parse(store['couchquiz.v1']); oldGame.game.board[0].clues[0] = 'gone';
+ok(boot({'couchquiz.v1': JSON.stringify(oldGame)})('view')==='setup', 'saved game with a removed question falls back to setup');
+
+// ---- fresh questions ----
+{
+  const cat = CATEGORIES[0], tier = cat.pool.filter(q=>q[0]===1);
+  seen = new Set(tier.slice(2).map(clueKey));
+  const drawn = drawClues(cat).slice(0,2);
+  ok(drawn.every(q=>!seen.has(clueKey(q))), 'unseen questions drawn first');
+  seen = new Set(tier.map(clueKey));
+  ok(drawClues(cat).length===6 && tier.every(q=>!seen.has(clueKey(q))), 'a fully seen level starts over');
+}
 
 // ---- new board ----
 const before = state.scores.slice();
