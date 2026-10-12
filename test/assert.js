@@ -102,6 +102,18 @@ ok(boot({'couchquiz.v1': JSON.stringify(oldGame)})('view')==='setup', 'saved gam
   seen = new Set(tier.map(clueKey));
   ok(drawClues(cat).length===6 && tier.every(q=>!seen.has(clueKey(q))), 'a fully seen level starts over');
 }
+ok(clash([1,'Who founded Microsoft?','Bill Gates','?'],[1,'Which company did Bill Gates found?','Microsoft','?']), 'clue naming another answer clashes');
+ok(!clash([1,'Which planet is red?','Mars','?'],[1,'What is the largest ocean?','The Pacific Ocean','?']), 'unrelated clues do not clash');
+// Needs full pools: tiny pools leave the draw no clash-free choice.
+if (CATEGORIES.every(c=>c.pool.length>=100)) {
+  let bad=0;
+  for (let n=0;n<30;n++){
+    startGame(randomPick());
+    const all=state.board.flatMap(c=>c.clues);
+    all.forEach((a,i)=>all.forEach((b,j)=>{ if(i<j&&clash(a,b)){ bad++; if(process.env.V) console.log(a[2],'/',b[2],'|',a[1],'|',b[1]); } }));
+  }
+  ok(bad===0, 'no clue on a board names another clue\'s answer ('+bad+' clashes)');
+}
 
 // ---- new board ----
 const before = state.scores.slice();
